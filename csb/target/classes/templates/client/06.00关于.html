@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style type="text/css">
+			body{width: 100%;height: 100%;}
+		</style>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta name="copyright" content="" />
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<meta charset="utf-8">
+		<title>订单</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/rich_base.css"/>
+		<link rel="stylesheet" type="text/css" href="css/rich_other.css"/>
+		<script src="js/Rich_Lee.js" type="text/javascript"></script>
+		<script src="js/TweenMax1.18.0.min.js" type="text/javascript"></script>
+		<script src="js/rich_one.js" type="text/javascript"></script>
+	</head>
+	<script type="text/javascript">
+		window.onload = function(){
+			var aSpan = rich('.about_top span');
+			var go = new TimelineMax();	
+				go.staggerTo(aSpan,2,{scale:1.2,opacity:0,repeat:-1},0.4);//头像波浪
+				html_hi();//body宽高
+				choice_food('footer dd a','#00b8e1');///footer
+		};
+	</script>
+	<body style="background: #f2f2f2;">
+		<section class="tel_out">
+			<div>
+				<p>免费服务电话</p>
+				<p>400-580-9983</p>
+				<span onclick="phone_hide('.tel_out');">取消</span>
+				<span>呼叫</span>
+			</div>
+		</section>
+		<section class="share_out"" onclick="phone_hide('.share_out');">
+			<ul>
+				<li>
+					<a href="www.baidu.com">
+						<img src="images/share_icon01.png"/>
+						<span>QQ</span>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<img src="images/share_icon02.png"/>
+						<span>微信</span>
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<img src="images/share_icon03.png"/>
+						<span>新浪微博</span>
+					</a>
+				</li>
+			</ul>
+		</section>
+		<section class="about">
+			<div class="about_bd">
+				<div class="about_head">
+					<div class="about_top">						
+						<img src="images/about_headimg.png"/>
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>
+				</div>
+				<p>在斯，万家那边</p>
+			</div>
+			<ul class="about_box">
+				<li><a href="#">我的资料</a></li>
+				<li><a href="#" onclick="phone_show('.tel_out')">联系我们</a></li>
+				<li><a href="#" onclick="phone_show('.share_out')">一键分享</a></li>
+				<li><a href="#">关于我们</a></li>
+				<li><a href="#">交费</a></li>
+			</ul>
+			<span class="out">退出当前账号</span>
+			<div style="height: 80px;width: 100%; float: left;"></div>
+		</section>		
+		<dl class="footer">
+			<dd>
+				<a href="#">
+					<img src="images/foote01.png"/>
+					<img src="images/foote11.png"/>					
+					<span>套餐</span>
+				</a>
+			</dd>
+			<dd>
+				<a href="#">
+					<img src="images/foote02.png"/>
+					<img src="images/foote22.png"/>					
+					<span>套餐</span>
+				</a>
+			</dd>
+			<dd>
+				<a href="#">
+					<img src="images/foote03.png"/>
+					<img src="images/foote33.png"/>					
+					<span>套餐</span>
+				</a>
+			</dd>
+		</dl>
+	</body>
+</html>
