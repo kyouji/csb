@@ -126,18 +126,37 @@ function img_big(){
 /*--------------------------zhangji/ ---------------------*/
 function regFormSubmit()
 {
+	<!--
 	form = document.forms["regForm"];
 	form.changeRole.value=document.getElementById("roleId").value;
 	form.submit();
+	-->
+	var roleId = document.getElementById("roleId");
+	var enterType = document.getElementById("enterType");
+	  $.ajax({
+	      type:"post",
+	      url:"/reg",
+	      data:{"id":id,"activityId":activityId,"statusId":statusId,"reason":reason},
+	      success:function(data){
+			if (data.code == 1)
+			{
+	            Showbo.Msg.alert(data.msg);
+			}
+			else{
+				location.reload();
+			}
+	      }
+	  });
+	}
 }
 
 function selectType(id)
 {
 	$(".input02").removeClass("inputSelected");
-	$(".input02").removeAttr("name");
+	$(".input02").removeAttr("selected");
 	
-	$("#type"+id).attr("name","enterType");
-	$("#typeId"+id).attr("name","enterTypeId");
+	$("#enterType"+id).attr("selected","selected");
+	$("#enterTypeId"+id).attr("selected","selected");
 	$("#type"+id).addClass("inputSelected");
 }	
 

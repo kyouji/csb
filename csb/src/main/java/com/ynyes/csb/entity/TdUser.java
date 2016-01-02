@@ -53,6 +53,18 @@ public class TdUser {
 	// 真实姓名
 	@Column
 	private String realName;
+	
+	//企业名称
+	@Column
+	private String enterName;
+	
+	//企业类型
+	@Column
+	private String enterType;
+	
+	//企业类型id
+	@Column
+	private Long enterTypeId;
 
 	// 角色
     @Column
@@ -208,6 +220,36 @@ public class TdUser {
 
 	public void setRoleId(Long roleId) {
 		this.roleId = roleId;
+	}
+
+
+	public String getEnterName() {
+		return enterName;
+	}
+
+
+	public void setEnterName(String enterName) {
+		this.enterName = enterName;
+	}
+
+
+	public String getEnterType() {
+		return enterType;
+	}
+
+
+	public void setEnterType(String enterType) {
+		this.enterType = enterType;
+	}
+
+
+	public Long getEnterTypeId() {
+		return enterTypeId;
+	}
+
+
+	public void setEnterTypeId(Long enterTypeId) {
+		this.enterTypeId = enterTypeId;
 	}
 
 

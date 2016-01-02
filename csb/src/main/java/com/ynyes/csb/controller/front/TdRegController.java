@@ -174,40 +174,95 @@ public class TdRegController {
 	 * @since 1.0.0
 	 */
 	@RequestMapping(value = "/reg", method = RequestMethod.POST)
-	public String reg(String username, 
+	@ResponseBody
+	public Map<String, Object> reg(String username, 
 									String mobile, 
 									String password, 
 									String password2, 
+									String enterName,
 									String enterType, 
 									Long enterTypeId,
 									Long roleId,
 									Long changeRole,
+									ModelMap map,
 									HttpServletRequest request) {
+	    Map<String, Object> res = new HashMap<String, Object>();
+	    res.put("code", 1);
+		
 		if(null != changeRole)
 		{
-			return "redirect:/reg?type="+changeRole;
+//			map.addAttribute("username", username);
+//			map.addAttribute("mobile", mobile);
+//			map.addAttribute("enterName", enterName);
+//			map.addAttribute("enterType", enterType);
+//			map.addAttribute("enterTypeId", enterTypeId);
+//			map.addAttribute("roleId", roleId);
+//			if(changeRole == 0L)
+//			{
+//				return "/client/reg_enter";
+//			}
+//			else if(changeRole == 1L){
+//				return "/client/reg_acc";
+//			}
+		       res.put("change", changeRole);
+		       return res;
 		}
 		
-		if (null == username ||username.equals("")
-				|| null == mobile || mobile.equals("")
-				|| null == password || password.equals("")
-				)
+		if (null == username ||username.equals(""))
 		{
-			Long error = 1L;
-			return "redirect:/reg?error="+error;
+			res.put("msg", "用户名不能为空！");
+			return res;
 		}
+		if (null == mobile || mobile.equals(""))
+		{
+			res.put("msg", "联系电话不能为空！");
+			return res;
+		}
+		if(null == password || password.equals(""))
+		{
+			res.put("msg", "密码不能为空！");
+			return res;
+		}
+		if (null == password2 || password2.equals("") || null != password2 && password2 != password)
+		{
+			res.put("msg", "两次输入密码不一致！");
+			return res;
+		}
+		TdUser user1 = tdUserService.findByUsername(username);
+		if (null != user1) {
+			res.put("msg", "该用户名已被注册！");
+			return res;
+		}
+		TdUser user2 = tdUserService.findByMobile(mobile);
+		if (null != user2) {
+			res.put("msg", "该联系电话已被注册！");
+			return res;
+		}
+		if(null != enterType && !enterType.equals("") && (null == enterName ||enterName.equals("")))
+		{
+			res.put("msg", "公司名称不能为空！");
+			return res;
+		}
+
 		
 		TdUser user = new TdUser();
 		user.setUsername(username);
 		user.setPassword(password);
 		user.setMobile(mobile);
+		if(null != enterName)
+		{
+			user.setEnterName(enterName);
+		}
+		user.setEnterType(enterType);
+		user.setEnterTypeId(enterTypeId);
 		user.setStatusId(1L);
 		user.setRegisterTime(new Date());
-		user.setRoleId(1L);
+		user.setRoleId(roleId);
+		user.setLastLoginTime(new Date());
 		tdUserService.save(user);
 		
-		
-		return "redirect:/enterprise/info";
+	    res.put("code", 0);
+	    return res;
 
 	}
 

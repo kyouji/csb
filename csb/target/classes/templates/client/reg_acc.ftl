@@ -24,6 +24,8 @@
 		};
 	</script>
 	<body style="background: #f2f2f2;">
+	<form name="regForm" id="regForm" action="/reg" method="post">
+	<input type="hidden" name="changeRole" value="${changeRole!''}">	
 		<section class="teaty_out">
 			<div>
 				<span>财税宝1688用户服务协议</span>
@@ -56,14 +58,22 @@
 		</section>
 		
 		<header class="header_one">
-			<a href="#"></a>
+			<a href="javascript(0)"></a>
 			<div>注册</div>
 		</header>
 		<article class="reg">
 			<div>会计注册</div>
-			<input class="input01" type="text" placeholder="请输入联系人姓名" autocomplete="on" name="" id="" value="">
-			<input class="input01" type="text" placeholder="请输入联系人电话" autocomplete="on" name="" id="" value="">
-			
+			<section class="choice_regis">
+				<select id="roleId" name="roleId" onchange="javascript:regFormSubmit();">
+					<option value="">请选择注册类型</option>
+					<option value="0">公司注册</option>
+					<option value="1">会计注册</option>
+				</select>
+			</section>			
+			<input class="input01" type="text" placeholder="请输入联系人姓名" autocomplete="on" name="username"  value="${username!''}">
+			<input class="input01" type="text" placeholder="请输入联系人电话" autocomplete="on" name="mobile"  value="${mobile!''}">
+			<input class="input01" type="password" placeholder="请输入密码" name="password"  value="">
+			<input class="input01" type="password" placeholder="请再次输入密码" name="password2"  value="">
 			<span>上传会计证照</span>
 						<section class="poto">	
 				<ul class="poto_box">
@@ -108,5 +118,6 @@
 			<input type="submit" name="" id="" value="同意协议并注册">
 			<p class="teaty" onclick="teaty_show('.teaty_out')">财税宝1688用户服务协议</p>
 		</article>
+	</form>		
 	</body>
 </html>

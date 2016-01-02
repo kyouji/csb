@@ -27,7 +27,7 @@
 	</script>
 	<body style="background: #f2f2f2;">
 	<form name="regForm" id="regForm" action="/reg" method="post">
-	<input name="changeRole" value="${changeRole!''}">
+	<input type="hidden" name="changeRole" value="${changeRole!''}">
 		<section class="teaty_out">
 			<div>
 				<span>财税宝1688用户服务协议</span>
@@ -64,7 +64,7 @@
 		</header>
 		<article class="reg">
 			<div>公司注册</div>
-			<input class="input01" type="text" placeholder="请输入公司名称" autocomplete="on" name="" id="" value=""> 
+			<input class="input01" type="text" placeholder="请输入公司名称" autocomplete="on" name="enterName" id="enterName"  value="${enterName!''}"> 
 			<section class="choice_regis">
 				<select id="roleId" name="roleId" onchange="javascript:regFormSubmit();">
 					<option value="">请选择注册类型</option>
@@ -72,15 +72,17 @@
 					<option value="1">会计注册</option>
 				</select>
 			</section>
-			<p class="choice_com">请选择公司类型</p>
+			<#--<p class="choice_com">请选择公司类型</p>-->
 			<#if enterType_list??>
 				<#list enterType_list as item>
+					<input type="checkbox" style="display:none;" name="enterType" id="enterType" value="${item.title!''}">
+					<input type="checkbox" style="display:none;" name="enterTypeId" id="enterTypeId" value="${item.id?c!''}">
 					<input class="input02 <#if item_index == 0> inputSelected </#if>" type="button" id="type${item_index}" onclick="javascript:selectType(${item_index});" <#if item_index == 0> name="enterType" </#if>  value="${item.title!''}">
-					<input type="hidden" id="typeId${item_index}"  <#if item_index == 0> name="enterTypeId" </#if> value="<#if item??&&item.id??>${item.id?c}</#if>">
+					<#--<input type="hidden" id="typeId${item_index}"  <#if item_index == 0> name="enterTypeId" </#if> value="<#if item??&&item.id??>${item.id?c}</#if>">-->
 				</#list>
 			</#if>	
-			<input class="input01" type="text" placeholder="请输入联系人姓名" name="username"  value="">
-			<input class="input01" type="tel" placeholder="请输入联系人电话" name="mobile"  value="">
+			<input class="input01" type="text" placeholder="请输入联系人姓名" name="username"  value="${username!''}">
+			<input class="input01" type="tel" placeholder="请输入联系人电话" name="mobile"  value="${mobile!''}">
 			<input class="input01" type="password" placeholder="请输入密码" name="password"  value="">
 			<input class="input01" type="password" placeholder="请再次输入密码" name="password2"  value="">
 			<span>上传营业执照</span>
