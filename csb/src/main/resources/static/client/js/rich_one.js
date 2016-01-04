@@ -114,56 +114,153 @@ function img_big(){
 	//var aDd_add = rich('.add_poto')[0].children[0];
 	var aDd_back= rich('.add_poto')[0].children[2];	
 	aChoice.onclick = function(){
-		aDd.style.display = 'block';
-		aDd_back.onclick = function(){
-			aDd.style.display = 'none';
-		};
+//		aDd.style.display = 'block';
+//		aDd_back.onclick = function(){
+//			aDd.style.display = 'none';
+//		};
+		$("#file").click();		
 	};
 	
 };
 
 
-/*--------------------------zhangji/ ---------------------*/
-function regFormSubmit()
+/*--------------------------zhangji 注册 begin ---------------------*/
+//注册页面切换
+function regChangeRole()
 {
-	<!--
 	form = document.forms["regForm"];
-	form.changeRole.value=document.getElementById("roleId").value;
 	form.submit();
-	-->
-	var roleId = document.getElementById("roleId");
-	var enterType = document.getElementById("enterType");
+}
+
+//提交表单-公司
+function regEnterSubmit()
+{
+	var enterName = document.getElementById("enterName").value; //公司名称
+	//取出radio选择的值 zhangji
+	//type
+	var enterTypes = document.getElementsByName("enterType");  //取出所有该名字的标签数组
+	var typeIndex = 0;   //初始化数组序号
+	for(var i=0; i<enterTypes.length; i++)
+		{
+			if(enterTypes[i].checked = true)    //遍历出被选中的那个radio
+				{
+					typeIndex = i;
+					break;
+				}
+		}
+	var enterType = enterTypes[typeIndex].value;  //赋值
+	//typeId
+	var enterTypeIds = document.getElementsByName("enterTypeId");  //取出所有该名字的标签数组
+	var typeIdIndex = 0;   //初始化数组序号
+	for(var i=0; i<enterTypeIds.length; i++)
+		{
+			if(enterTypeIds[i].checked = true)    //遍历出被选中的那个radio
+				{
+					typeIdIndex = i;
+					break;
+				}
+		}
+	var enterTypeId = enterTypeIds[typeIdIndex].value;  //赋值
+	
+	var roleId = document.getElementById("roleId").value;
+	var realName = document.getElementById("realName").value;
+	var username = document.getElementById("username").value;
+	var mobile = document.getElementById("mobile").value;
+	var password = document.getElementById("password").value;
+	var password2 = document.getElementById("password2").value;
+	
 	  $.ajax({
 	      type:"post",
 	      url:"/reg",
-	      data:{"id":id,"activityId":activityId,"statusId":statusId,"reason":reason},
+	      data:{"roleId":roleId,
+	    	  		"enterType":enterType,
+	    	  		"enterTypeId":enterTypeId,
+	    	  		"realName":realName,
+	    	  		"username":username,
+	    	  		"mobile":mobile,
+	    	  		"enterName":enterName,
+	    	  		"password":password,
+	    	  		"password2":password2},
 	      success:function(data){
 			if (data.code == 1)
 			{
-	            Showbo.Msg.alert(data.msg);
+	            alert(data.msg);
 			}
 			else{
-				location.reload();
+				alert("注册成功！欢迎使用财税宝")
+				location.href="/";
 			}
 	      }
 	  });
-	}
 }
 
+//提交表单-会计
+function regAccSubmit()
+{
+	var roleId = document.getElementById("roleId").value;
+	var realName = document.getElementById("realName").value;
+	var username = document.getElementById("username").value;
+	var mobile = document.getElementById("mobile").value;
+	var password = document.getElementById("password").value;
+	var password2 = document.getElementById("password2").value;
+	
+	  $.ajax({
+	      type:"post",
+	      url:"/reg",
+	      data:{"roleId":roleId,
+	    	  		"realName":realName,
+	    	  		"username":username,
+	    	  		"mobile":mobile,
+	    	  		"password":password,
+	    	  		"password2":password2},
+	      success:function(data){
+			if (data.code == 1)
+			{
+	            alert(data.msg);
+			}
+			else{
+				alert("注册成功！欢迎使用财税宝")
+				location.href="/";
+			}
+	      }
+	  });
+}
+
+//公司注册选择类型
 function selectType(id)
 {
 	$(".input02").removeClass("inputSelected");
-	$(".input02").removeAttr("selected");
+	$(".type_radio").removeAttr("selected");
 	
 	$("#enterType"+id).attr("selected","selected");
 	$("#enterTypeId"+id).attr("selected","selected");
 	$("#type"+id).addClass("inputSelected");
 }	
 
+/*--------------------------zhangji 注册 end ---------------------*/
 
-
-
-
+/*--------------------------zhangji 登陆 begin ---------------------*/
+function loginSubmit()
+{
+	var username = document.getElementById("username").value; //用户名
+	var password = document.getElementById("password").value; //密码
+	
+	  $.ajax({
+	      type:"post",
+	      url:"/login",
+	      data:{"username":username,
+	    	  		"password":password},
+	      success:function(data){
+			if (data.code == 1)
+			{
+	            $("#alert_msg").html(data.msg);
+			}
+			else{
+				location.href="/index";
+			}
+	      }
+	  });
+}
 
 
 

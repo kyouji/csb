@@ -51,77 +51,6 @@ public class TdRegController {
 	@Autowired
 	TdEnterTypeService tdEnterTypeService;
 	
-	@RequestMapping(value = "/reg/check/{type}", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, String> validateForm(@PathVariable String type, String param,HttpServletRequest req) {
-		Map<String, String> res = new HashMap<String, String>();
-
-		res.put("status", "n");
-
-		if (null == type) {
-			res.put("info", "参数错误");
-			return res;
-		}
-
-		if (type.equalsIgnoreCase("username")) {
-			if (null == param || param.isEmpty()) {
-				res.put("info", "用户名不能为空");
-				return res;
-			}
-
-			TdUser user = tdUserService.findByUsername(param);
-
-			if (null != user) {
-				res.put("info", "该用户名已被注册");
-				return res;
-			}
-		}
-		
-		/**
-		 * ajax实时验证验证码，判断用户验证码是否输入正确
-		 * @author dengxiao
-		 */
-		if(type.equalsIgnoreCase("smsCode")){
-			String smsCode = (String) req.getSession().getAttribute("SMSCODE");
-			if(null == smsCode){
-				res.put("info", "请点击\"发送验证码\"");
-				return res;
-			}
-			if (null == param || param.isEmpty()) {
-				res.put("info", "用户名不能为空");
-				return res;
-			}
-			if(!smsCode.equalsIgnoreCase(param)){
-				res.put("info", "验证码输入错误！");
-				return res;
-			}
-		}
-
-		
-		/**
-		 * ajax实时验证 手机号查找用户 判断手机号是已否注册
-		 * 
-		 * @author libiao
-		 */
-		if (type.equalsIgnoreCase("mobile")) {
-			if (null == param || param.isEmpty()) {
-				res.put("info", "用户名不能为空");
-				return res;
-			}
-
-			TdUser user = tdUserService.findByMobile(param);
-
-			if (null != user) {
-				res.put("info", "该手机已经注册");
-				return res;
-			}
-		}
-
-		res.put("status", "y");
-
-		return res;
-	}
-
 	@RequestMapping("/reg")
 	public String reg(/* Integer shareId, */String name,  Long type, HttpServletRequest request,
 			ModelMap map) {
@@ -179,6 +108,7 @@ public class TdRegController {
 									String mobile, 
 									String password, 
 									String password2, 
+									String realName,
 									String enterName,
 									String enterType, 
 									Long enterTypeId,
@@ -189,25 +119,11 @@ public class TdRegController {
 	    Map<String, Object> res = new HashMap<String, Object>();
 	    res.put("code", 1);
 		
-		if(null != changeRole)
+		if (null == realName ||realName.equals(""))
 		{
-//			map.addAttribute("username", username);
-//			map.addAttribute("mobile", mobile);
-//			map.addAttribute("enterName", enterName);
-//			map.addAttribute("enterType", enterType);
-//			map.addAttribute("enterTypeId", enterTypeId);
-//			map.addAttribute("roleId", roleId);
-//			if(changeRole == 0L)
-//			{
-//				return "/client/reg_enter";
-//			}
-//			else if(changeRole == 1L){
-//				return "/client/reg_acc";
-//			}
-		       res.put("change", changeRole);
-		       return res;
+			res.put("msg", "联系人姓名不能为空！");
+			return res;
 		}
-		
 		if (null == username ||username.equals(""))
 		{
 			res.put("msg", "用户名不能为空！");
@@ -218,12 +134,17 @@ public class TdRegController {
 			res.put("msg", "联系电话不能为空！");
 			return res;
 		}
+		if(!isMobileNO(mobile))
+		{
+			res.put("msg", "电话号码格式不对！");
+			return res;
+		}
 		if(null == password || password.equals(""))
 		{
 			res.put("msg", "密码不能为空！");
 			return res;
 		}
-		if (null == password2 || password2.equals("") || null != password2 && password2 != password)
+		if (null == password2 || password2.equals("") || null != password2 && !password2.equals(password))
 		{
 			res.put("msg", "两次输入密码不一致！");
 			return res;
@@ -246,6 +167,7 @@ public class TdRegController {
 
 		
 		TdUser user = new TdUser();
+		user.setRealName(realName);
 		user.setUsername(username);
 		user.setPassword(password);
 		user.setMobile(mobile);
@@ -265,21 +187,36 @@ public class TdRegController {
 	    return res;
 
 	}
-
-	@RequestMapping(value = "/code", method = RequestMethod.GET)
-	public void verify(HttpServletResponse response, HttpServletRequest request) {
-		response.setContentType("image/jpeg");
-		response.setHeader("Pragma", "No-cache");
-		response.setHeader("Cache-Control", "no-cache");
-		response.setDateHeader("Expire", 0);
-		VerifServlet randomValidateCode = new VerifServlet();
-		randomValidateCode.getRandcode(request, response);
-		// QRCodeUtils qr = new QRCodeUtils();
-		// qr.getQRCode("weixin://wxpay/bizpayurl?appid=wx2421b1c4370ec43b&mch_id=10000100&nonce_str=f6808210402125e30663234f94c87a8c&product_id=1&time_stamp=1415949957&sign=512F68131DD251DA4A45DA79CC7EFE9D",
-		// 125, response);
+	
+	@RequestMapping(value = "/reg/changeRole", method = RequestMethod.POST)
+	public String regChanegeRole(String username, 
+									String realName,
+									String mobile, 
+									Long changeRole,
+									ModelMap map,
+									HttpServletRequest request) {
+		
+		if(null != changeRole)
+		{
+			map.addAttribute("realName", realName);
+			map.addAttribute("username", username);
+			map.addAttribute("mobile", mobile);
+			
+			if(changeRole == 0L)
+			{
+				map.addAttribute("enterType_list", tdEnterTypeService.findByIsEnableTrueOrderBySortIdAsc());
+				return "/client/reg_enter";
+			}
+			else if(changeRole == 1L){
+				return "/client/reg_acc";
+			}
+		}
+	
+    return "redirect:/reg";
 	}
+
 	public boolean isMobileNO(String mobiles) {
-		Pattern p = Pattern.compile("^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$");
+		Pattern p = Pattern.compile("^(0|86|17951|[0-9]{3})?([0-9]{8})|((13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8})$");
 		Matcher m = p.matcher(mobiles);
 		return m.matches();
 		}

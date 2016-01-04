@@ -11,23 +11,17 @@
 		<meta charset="utf-8">
 		<title>注册</title>
 		
-		<link rel="stylesheet" type="text/css" href="css/rich_base.css"/>
-		<link rel="stylesheet" type="text/css" href="css/rich_other.css"/>
-		<script src="js/jquery-1.11.0.js" type="text/javascript"></script>
-		<script src="js/Rich_Lee.js" type="text/javascript"></script>
-		<script src="js/TweenMax1.18.0.min.js" type="text/javascript"></script>
-		<script src="js/rich_one.js" type="text/javascript"></script>
+		<link rel="stylesheet" type="text/css" href="/client/css/rich_base.css"/>
+		<link rel="stylesheet" type="text/css" href="/client/css/rich_other.css"/>
+		<script src="/client/js/jquery-1.11.0.js" type="text/javascript"></script>
+		<script src="/client/js/Rich_Lee.js" type="text/javascript"></script>
+		<script src="/client/js/TweenMax1.18.0.min.js" type="text/javascript"></script>
+		<script src="/client/js/rich_one.js" type="text/javascript"></script>
 		
 	</head>
-	<script type="text/javascript">
-		window.onload = function(){			
-			img_big();
-		};
-		
-	</script>
+
 	<body style="background: #f2f2f2;">
-	<form name="regForm" id="regForm" action="/reg" method="post">
-	<input type="hidden" name="changeRole" value="${changeRole!''}">
+	<form name="regForm" id="regForm" action="/reg/changeRole" method="post">
 		<section class="teaty_out">
 			<div>
 				<span>财税宝1688用户服务协议</span>
@@ -64,27 +58,29 @@
 		</header>
 		<article class="reg">
 			<div>公司注册</div>
-			<input class="input01" type="text" placeholder="请输入公司名称" autocomplete="on" name="enterName" id="enterName"  value="${enterName!''}"> 
 			<section class="choice_regis">
-				<select id="roleId" name="roleId" onchange="javascript:regFormSubmit();">
+				<select id="changeRole" name="changeRole" onchange="javascript:regChangeRole();">
 					<option value="">请选择注册类型</option>
 					<option value="0">公司注册</option>
 					<option value="1">会计注册</option>
 				</select>
-			</section>
+			</section>	
+			<input type="hidden"  id="roleId" name="roleId"  value="0"> 
+			<input class="input01" type="text" placeholder="请输入公司名称" autocomplete="on" name="enterName" id="enterName"  value="${enterName!''}"> 
 			<#--<p class="choice_com">请选择公司类型</p>-->
 			<#if enterType_list??>
 				<#list enterType_list as item>
-					<input type="checkbox" style="display:none;" name="enterType" id="enterType" value="${item.title!''}">
-					<input type="checkbox" style="display:none;" name="enterTypeId" id="enterTypeId" value="${item.id?c!''}">
-					<input class="input02 <#if item_index == 0> inputSelected </#if>" type="button" id="type${item_index}" onclick="javascript:selectType(${item_index});" <#if item_index == 0> name="enterType" </#if>  value="${item.title!''}">
+					<input class="type_radio" type="radio" style="display:none;"  id="enterType${item_index}"  name="enterType" value="${item.title!''}" <#if item_index == 0> selected="selected" </#if>>
+					<input class="type_radio" type="radio" style="display:none;"  id="enterTypeId${item_index}"  name="enterTypeId"  value="${item.id?c!''}" <#if item_index == 0> selected="selected" </#if>>
+					<input class="input02 <#if item_index == 0> inputSelected </#if>" type="button" id="type${item_index}" onclick="javascript:selectType(${item_index});" <#if item_index == 0> name="type" </#if>  value="${item.title!''}">
 					<#--<input type="hidden" id="typeId${item_index}"  <#if item_index == 0> name="enterTypeId" </#if> value="<#if item??&&item.id??>${item.id?c}</#if>">-->
 				</#list>
 			</#if>	
-			<input class="input01" type="text" placeholder="请输入联系人姓名" name="username"  value="${username!''}">
-			<input class="input01" type="tel" placeholder="请输入联系人电话" name="mobile"  value="${mobile!''}">
-			<input class="input01" type="password" placeholder="请输入密码" name="password"  value="">
-			<input class="input01" type="password" placeholder="请再次输入密码" name="password2"  value="">
+			<input class="input01" type="text" placeholder="请输入联系人姓名" id="realName" name="realName"  value="${realName!''}">
+			<input class="input01" type="text" placeholder="请输入联系人电话" id="mobile" name="mobile"  value="${mobile!''}">
+			<input class="input01" type="text" placeholder="请输入用户名" id="username" name="username"  value="${username!''}">
+			<input class="input01" type="password" placeholder="请输入密码" id="password" name="password"  value="">
+			<input class="input01" type="password" placeholder="请再次输入密码" id="password2" name="password2"  value="">
 			<span>上传营业执照</span>
 			<section class="poto">	
 				<ul class="poto_box">
@@ -126,7 +122,7 @@
 					<li>返回</li>
 				</ul>
 			</section>
-			<input type="submit"  value="同意协议并注册" style="margin-top: 20px;">
+			<input type="button" onclick="javascript:regEnterSubmit();"  value="同意协议并注册" style="margin-top: 20px; color:#ffffff; background: #00b8e1;">
 			<p class="teaty" onclick="teaty_show('.teaty_out')">财税宝1688用户服务协议</p>
 		</article>
 	</form>	

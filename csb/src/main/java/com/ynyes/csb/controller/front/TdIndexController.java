@@ -1,55 +1,71 @@
 package com.ynyes.csb.controller.front;
 
-import java.util.Calendar;
-import java.util.List;
+
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.mobile.device.Device;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.ynyes.csb.entity.TdArticle;
-import com.ynyes.csb.entity.TdArticleCategory;
-import com.ynyes.csb.service.TdArticleCategoryService;
-import com.ynyes.csb.service.TdArticleService;
+import com.ynyes.csb.entity.TdUser;
 import com.ynyes.csb.service.TdCommonService;
-import com.ynyes.csb.util.ClientConstant;
+import com.ynyes.csb.service.TdUserService;
 
 /**
- * 前端首页控制
- *
+ * 首页（我的）【需登陆】
+ * 角色数：2
+ * 会计【唯一界面】、客户。
+ *@author Zhangji
  */
 @Controller
 @RequestMapping("/")
 public class TdIndexController {
 
-    @Autowired
-    private TdArticleService tdArticleService;
-
-    @Autowired
-    private TdArticleCategoryService tdArticleCategoryService;
     
     @Autowired
     TdCommonService tdCommonService;
+    
+    @Autowired
+    TdUserService tdUserService;
 
     @RequestMapping
     public String index(HttpServletRequest req, Device device, ModelMap map) {        
         
-    
-        tdCommonService.setHeader(map, req);              
-        
         String username = (String) req.getSession().getAttribute("username");
+        if(null == username)
+        {
+        	return "redirect:/login";
+        }
         map.addAttribute("username" , username);
         
-        //新闻动态
-        List<TdArticle> tdArticles = tdArticleService.findByMenuId(10L);
-        if (null != tdArticles) {
-			map.addAttribute("news_list", tdArticles);
-		}
+        TdUser user = tdUserService.findByUsername(username);
+        if (null != user)
+        {
+            map.addAttribute("roleId", user.getRoleId());
+            map.addAttribute("user", user);
+        }
+
+        return "/client/index";
+    }
+    
+    @RequestMapping("/index")
+    public String Index(HttpServletRequest req, Device device, ModelMap map) {        
+        
+        String username = (String) req.getSession().getAttribute("username");
+        if(null == username)
+        {
+        	return "redirect:/login";
+        }
+        map.addAttribute("username" , username);
+        
+        TdUser user = tdUserService.findByUsername(username);
+        if (null != user)
+        {
+            map.addAttribute("roleId", user.getRoleId());
+        }
 
         return "/client/index";
     }

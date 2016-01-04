@@ -11,11 +11,11 @@
 		<meta charset="utf-8">
 		<title>首页</title>
 		
-		<link rel="stylesheet" type="text/css" href="css/rich_base.css"/>
-		<link rel="stylesheet" type="text/css" href="css/rich_other.css"/>
-		<script src="js/Rich_Lee.js" type="text/javascript"></script>
-		<script src="js/TweenMax1.18.0.min.js" type="text/javascript"></script>
-		<script src="js/rich_one.js" type="text/javascript"></script>
+		<link rel="stylesheet" type="text/css" href="/client/css/rich_base.css"/>
+		<link rel="stylesheet" type="text/css" href="/client/css/rich_other.css"/>
+		<script src="/client/js/Rich_Lee.js" type="text/javascript"></script>
+		<script src="/client/js/TweenMax1.18.0.min.js" type="text/javascript"></script>
+		<script src="/client/js/rich_one.js" type="text/javascript"></script>
 	</head>
 	<script type="text/javascript">
 		window.onload = function(){
@@ -29,7 +29,7 @@
 		</div>
 		<ul class="index_nav01">
 			<li>
-				<a href="#">
+				<a href="/bill/upload<#if user??>?id=${user.id?c}</#if>">
 					<div class="index_box01">
 						<img src="/client/images/index_icon01.png"/>
 						<p>上传票据</p>
@@ -68,28 +68,30 @@
 			</li>
 		</ul>
 		<div style="height: 80px;width: 100%; float: left;"></div>
-		<dl class="footer">
-			<dd>
-				<a href="#">
-					<img src="/client/images/foote01.png"/>
-					<img src="/client/images/foote11.png"/>					
-					<span>套餐</span>
-				</a>
-			</dd>
-			<dd>
-				<a href="#">
-					<img src="/client/images/foote02.png"/>
-					<img src="/client/images/foote22.png"/>					
-					<span>套餐</span>
-				</a>
-			</dd>
-			<dd>
-				<a href="/login">
-					<img src="/client/images/foote03.png"/>
-					<img src="/client/images/foote33.png"/>					
-					<span>我</span>
-				</a>
-			</dd>
-		</dl>
+		<#if roleId?? && roleId == 0>
+			<dl class="footer">
+				<dd>
+					<a href="/">
+						<img src="/client/images/foote01.png"/>
+						<img src="/client/images/foote11.png"/>					
+						<span>我的</span>
+					</a>
+				</dd>
+				<dd>
+					<a href="/logout">
+						<img src="/client/images/foote02.png"/>
+						<img src="/client/images/foote22.png"/>					
+						<span>我要</span>
+					</a>
+				</dd>
+				<dd>
+					<a href="/login">
+						<img src="/client/images/foote03.png"/>
+						<img src="/client/images/foote33.png"/>					
+						<span>财税宝</span>
+					</a>
+				</dd>
+			</dl>
+		</#if>
 	</body>
 </html>

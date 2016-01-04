@@ -75,10 +75,9 @@ public class TdLoginController {
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> login(String username, String password, String alipayuser_id, String type, String code,
-			Boolean isSave, HttpServletRequest request) {
+	public Map<String, Object> login(String username, String password, 
+			 HttpServletRequest request) {
 		Map<String, Object> res = new HashMap<String, Object>();
-		String codeBack = (String) request.getSession().getAttribute("RANDOMVALIDATECODEKEY");
 
 		res.put("code", 1);
 
@@ -91,83 +90,38 @@ public class TdLoginController {
 
 		if (null != user) {
 			if (!user.getPassword().equals(password)) {
-				res.put("msg", "密码错误");
+				res.put("msg", "亲！密码错误，请重新输入。");
 				res.put("username", username);
 				return res;
 			}
-			if (codeBack == null || !codeBack.equalsIgnoreCase(code)) {
-				res.put("msg", "验证码错误");
-				return res;
-			}
+			
 			user.setLastLoginTime(new Date());
 			user = tdUserService.save(user);
 
 			res.put("code", 0);
 
-			/**
-			 * @author lichong
-			 * @注释：判断用户类型
-			 */
-			// if(null != user.getRoleId() && user.getRoleId().equals(2L)){
-			// res.put("role", 2);
-			// request.getSession().setAttribute("diysiteUsername",
-			// user.getUsername());
-			// return res;
-			// }
-			// request.getSession().setAttribute("username",
-			// user.getUsername());
-			// request.getSession().setAttribute("usermobile",
-			// user.getMobile());
-			// return res;
-
 			System.err.println(user);
 			Integer roleId = user.getRoleId().intValue();
-			if (null != roleId && roleId == 3)
-			{
-				request.getSession().setMaxInactiveInterval(60 * 60 * 24);
-			}
-			else
-			{
-				request.getSession().setMaxInactiveInterval(60 * 60 * 2);
-			}
-			
-			switch (roleId) {
-			// 企业项目
-			case 1:
-				res.put("role", 1);
-				request.getSession().setAttribute("enterpriseUsername", user.getUsername());
-				request.getSession().setAttribute("enterpriseUsermobile", user.getMobile());
-				request.getSession().setAttribute("username", user.getUsername());
-				break;
-			// 区县管理
-			case 2:
-				res.put("role", 2);
-				request.getSession().setAttribute("regionUsername", user.getUsername());
-				request.getSession().setAttribute("regionUsermobile", user.getMobile());
-				request.getSession().setAttribute("username", user.getUsername());
-				break;
-			// 专家
-			case 3:
-				res.put("role", 3);
-				request.getSession().setAttribute("expertUsername", user.getUsername());
-				request.getSession().setAttribute("expertUsermobile", user.getMobile());
-				request.getSession().setAttribute("username", user.getUsername());
-				break;
-			// 活动管理
-			case 4:
-				res.put("role", 4);
-				request.getSession().setAttribute("activityUsername", user.getUsername());
-				request.getSession().setAttribute("activityUsermobile", user.getMobile());
-				request.getSession().setAttribute("username", user.getUsername());
-				break;
-			default:
-				res.put("role", 0);
-				request.getSession().setAttribute("username", user.getUsername());
-				request.getSession().setAttribute("usermobile", user.getMobile());
-				request.getSession().setAttribute("username", user.getUsername());
-				break;
-			}
+			request.getSession().setMaxInactiveInterval(60 * 60 * 2);
 
+			
+//			switch (roleId) {
+//			// 公司
+//			case 0:
+////				res.put("role", 0);
+//				request.getSession().setAttribute("enterUsername", user.getUsername());
+//				break;
+//			// 会计
+//			case 1:
+////				res.put("role", 1);
+//				request.getSession().setAttribute("accUsername", user.getUsername());
+//				break;
+//			default:
+////				res.put("role", 0);
+//				request.getSession().setAttribute("username", user.getUsername());
+//				break;
+//			}
+			request.getSession().setAttribute("username", user.getUsername());
 			return res;
 		}
 		/**
@@ -178,7 +132,7 @@ public class TdLoginController {
 		user = tdUserService.findByMobileAndIsEnabled(username);
 		if (null != user) {
 			if (!user.getPassword().equals(password)) {
-				res.put("msg", "密码错误");
+				res.put("msg", "亲！密码错误，请重新输入。");
 				return res;
 			}
 			user.setLastLoginTime(new Date());
@@ -187,101 +141,29 @@ public class TdLoginController {
 
 			res.put("code", 0);
 
-			/**
-			 * @author lichong
-			 * @注释：判断用户类型
-			 */
-			// if (user.getRoleId() == 2L) {
-			// res.put("role", 2);
-			// request.getSession().setAttribute("diysiteUsername",
-			// user.getUsername());
-			// return res;
-			// }
-			// request.getSession().setAttribute("username",
-			// user.getUsername());
-			// request.getSession().setAttribute("usermobile",
-			// user.getMobile());
-			// return res;
-
-			Integer roleId = user.getRoleId().intValue();
-			switch (roleId) {
-			case 1:
-				res.put("role", 1);
-				request.getSession().setAttribute("enterpriseUsername", user.getUsername());
-				request.getSession().setAttribute("enterpriseUsermobile", user.getMobile());
-				request.getSession().setAttribute("username", user.getUsername());
-				break;
-			case 2:
-				res.put("role", 2);
-				request.getSession().setAttribute("regionUsername", user.getUsername());
-				request.getSession().setAttribute("regionUsermobile", user.getMobile());
-				request.getSession().setAttribute("username", user.getUsername());
-				break;
-			case 3:
-				res.put("role", 3);
-				request.getSession().setAttribute("expertUsername", user.getUsername());
-				request.getSession().setAttribute("expertUsermobile", user.getMobile());
-				request.getSession().setAttribute("username", user.getUsername());
-				break;
-			case 4:
-				res.put("role", 4);
-				request.getSession().setAttribute("activityUsername", user.getUsername());
-				request.getSession().setAttribute("activityUsermobile", user.getMobile());
-				request.getSession().setAttribute("username", user.getUsername());
-				break;
-			default:
-				res.put("role", 0);
-				request.getSession().setAttribute("username", user.getUsername());
-				request.getSession().setAttribute("usermobile", user.getMobile());
-				break;
-			}
+//			Integer roleId = user.getRoleId().intValue();
+//			switch (roleId) {
+//			// 公司
+//			case 0:
+////				res.put("role", 0);
+//				request.getSession().setAttribute("enterUsername", user.getUsername());
+//				break;
+//			// 会计
+//			case 1:
+////				res.put("role", 1);
+//				request.getSession().setAttribute("accUsername", user.getUsername());
+//				break;
+//			default:
+////				res.put("role", 0);
+//				request.getSession().setAttribute("username", user.getUsername());
+//				break;
+//			}
+			request.getSession().setAttribute("username", user.getUsername());
 			return res;
 		} else { // 账号-手机都未通过验证，则用户不存在
-			res.put("msg", "不存在该用户");
+			res.put("msg", "亲！帐号不存在，请重新输入。");
 			return res;
 		}
-
-	}
-
-	/**
-	 * @author Zhangji 验证码检验
-	 */
-	@RequestMapping(value = "/login/check/{type}", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, String> validateForm(@PathVariable String type, String param, HttpServletRequest request) {
-		Map<String, String> res = new HashMap<String, String>();
-
-		res.put("status", "n");
-
-		if (null == type) {
-			res.put("info", "参数错误");
-			return res;
-		}
-
-		if(type.equalsIgnoreCase("mobile")){
-        	TdUser user = tdUserService.findByMobileAndIsEnabled(param);
-        	if(null == user){
-        		res.put("info", "手机号不存在");
-        		return res;
-        	}
-        }
-		if (type.equalsIgnoreCase("code")) {
-			if (null == param || param.isEmpty()) {
-				res.put("info", "请输入验证码");
-				return res;
-			}
-
-//			TdUser user = tdUserService.findByUsername(param);
-			String codeBack = (String) request.getSession().getAttribute("RANDOMVALIDATECODEKEY");
-			if (!codeBack.equalsIgnoreCase(param)) {
-				res.put("info", "验证码错误");
-				return res;
-			}
-		}
-
-		res.put("status", "y");
-
-		return res;
 	}
 
 	/**

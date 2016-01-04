@@ -11,11 +11,11 @@
 		<meta charset="utf-8">
 		<title>注册</title>
 		
-		<link rel="stylesheet" type="text/css" href="css/rich_base.css"/>
-		<link rel="stylesheet" type="text/css" href="css/rich_other.css"/>
-		<script src="js/jquery-1.11.0.js" type="text/javascript"></script>
-		<script src="js/Rich_Lee.js" type="text/javascript"></script>
-		<script src="js/rich_one.js" type="text/javascript"></script>
+		<link rel="stylesheet" type="text/css" href="/client/css/rich_base.css"/>
+		<link rel="stylesheet" type="text/css" href="/client/css/rich_other.css"/>
+		<script src="/client/js/jquery-1.11.0.js" type="text/javascript"></script>
+		<script src="/client/js/Rich_Lee.js" type="text/javascript"></script>
+		<script src="/client/js/rich_one.js" type="text/javascript"></script>
 		
 	</head>
 	<script type="text/javascript">
@@ -24,8 +24,7 @@
 		};
 	</script>
 	<body style="background: #f2f2f2;">
-	<form name="regForm" id="regForm" action="/reg" method="post">
-	<input type="hidden" name="changeRole" value="${changeRole!''}">	
+	<form name="regForm" id="regForm" action="/reg/changeRole" method="post">
 		<section class="teaty_out">
 			<div>
 				<span>财税宝1688用户服务协议</span>
@@ -64,16 +63,18 @@
 		<article class="reg">
 			<div>会计注册</div>
 			<section class="choice_regis">
-				<select id="roleId" name="roleId" onchange="javascript:regFormSubmit();">
+				<select id="changeRole" name="changeRole" onchange="javascript:regChangeRole();">
 					<option value="">请选择注册类型</option>
 					<option value="0">公司注册</option>
 					<option value="1">会计注册</option>
 				</select>
-			</section>			
-			<input class="input01" type="text" placeholder="请输入联系人姓名" autocomplete="on" name="username"  value="${username!''}">
-			<input class="input01" type="text" placeholder="请输入联系人电话" autocomplete="on" name="mobile"  value="${mobile!''}">
-			<input class="input01" type="password" placeholder="请输入密码" name="password"  value="">
-			<input class="input01" type="password" placeholder="请再次输入密码" name="password2"  value="">
+			</section>	
+			<input type="hidden"  id="roleId" name="roleId"  value="1"> 		
+			<input class="input01" type="text" placeholder="请输入联系人姓名" id="realName" name="realName"  value="${realName!''}">
+			<input class="input01" type="text" placeholder="请输入联系人电话" id="mobile" name="mobile"  value="${mobile!''}">
+			<input class="input01" type="text" placeholder="请输入用户名" id="username" name="username"  value="${username!''}">
+			<input class="input01" type="password" placeholder="请输入密码" id="password" name="password"  value="">
+			<input class="input01" type="password" placeholder="请再次输入密码" id="password2" name="password2"  value="">
 			<span>上传会计证照</span>
 						<section class="poto">	
 				<ul class="poto_box">
@@ -115,7 +116,7 @@
 					<li>返回</li>
 				</ul>
 			</section>
-			<input type="submit" name="" id="" value="同意协议并注册">
+			<input type="button" onclick="javascript:regAccSubmit();"  value="同意协议并注册" style="margin-top: 20px; color:#ffffff; background: #00b8e1;">
 			<p class="teaty" onclick="teaty_show('.teaty_out')">财税宝1688用户服务协议</p>
 		</article>
 	</form>		
