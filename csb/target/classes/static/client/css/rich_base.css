@@ -1,0 +1,425 @@
+@charset "utf-8";
+/* CSS Document */
+
+*{padding:0;margin:0;}
+html,body{margin:0px;padding:0px;color:#666666;font-family:"Microsoft YaHei", Arial, Helvetica, sans-serif;font-size:0.9em;background:#fff;position:relative;}
+img{border:0;position:relative;max-width:100%;}
+.clear{height:0px;line-height:0px;font-size: 0px;clear:both;visibility:hidden;overflow:hidden;padding:0;margin:0;}
+div,ul,dl,dd,dt,li,td,tr,table,p,span,h1,h2,h3,h4,h5,h6,form{margin:0px;padding:0px;list-style:none;list-style-type:none;word-wrap:break-word;position:relative;border:none;}
+a{color:#666666;text-decoration:none;text-align:center;position:relative;cursor:pointer;}
+header,footer,nav,section,article,menu,aside{display:block;position:relative;} 
+textarea{resize:none;}
+i,em{font-style:normal;}
+strong{font-weight:normal;}
+table{border-collapse:collapse;border-spacing:0;}
+th,td{text-align:left;}
+input,select,textarea{font-family:"Microsoft YaHei";}
+/*去除ios默认input样式*/
+input[type="text"],input[type="password"],input[type="submit"],input[type="reset"], input[type="button"],button{font-family:"Microsoft YaHei";-webkit-appearance:none;appearance:none;outline:none;-webkit-tap-highlight-color:rgba(0,0,0,0);border-radius:0;}
+
+
+/*header_one*/
+.header_one{
+	width: 100%;
+	height: 50px;
+	overflow: hidden;
+	background: white;
+}
+.header_one a{
+	display: block;
+	width: 20%;
+	height: 50px;
+	float: left;
+	background: url(../images/header_oneback.png) no-repeat center;
+	background-size: 14px;
+}
+.header_one .det{
+	display: block;
+	width: 20%;
+	height: 50px;
+	float: left;
+	background: url(../images/deta_icon.png) no-repeat center;
+	background-size: 20px;
+}
+.header_one div{
+	width: 60%;
+	padding-right:20%;
+	float: left;
+	line-height:50px;
+	text-align: center;
+	font-size: 1.4em;
+	color: #333333;
+}
+/*footer*/
+.footer{
+	width: 100%;
+	height: 56px;
+	overflow: hidden;
+	position: fixed;
+	left: 0px;
+	bottom: 0px;
+	background: white;
+}
+.footer dd{
+	width: 33.3%;
+	height: 50px;
+	float: left;
+}
+.footer dd a{
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+.footer dd a img{
+	width: 26px;
+	height: 26px;
+	margin: auto;
+	margin-top: 6px;
+	display: block;
+}
+.footer dd a img:nth-of-type(2){
+	display: none;
+}
+.footer dd a span{
+	width: 100%;
+	display: block;
+	margin-top: 3px;
+}
+
+/*tel_out*/
+.tel_out{
+	width: 100%;
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	z-index: 999;
+	background: rgba(0,0,0,0.5);
+	display: none;
+}
+.tel_out div{
+	width: 220px;
+	padding: 10px 20px;
+	margin: auto;
+	height: 80px;
+	background: white;
+	border-radius: 6px;
+}
+.tel_out div p{
+	width: 100%;
+	line-height: 20px;
+	font-size: 1.1em;
+	color: #333333;
+}
+.tel_out div span{
+	padding: 10px 14px;
+	float: right;
+	color: #00b8e1;
+}
+.share_out{
+	width: 100%;
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	z-index: 999;
+	background: rgba(0,0,0,0.5);
+	display: none;
+}
+.share_out ul{
+	width: 220px;
+	padding: 10px 20px;
+	margin: auto;
+	height: 80px;
+	background: white;
+	border-radius: 6px;
+	overflow: hidden;
+}
+.share_out ul li{
+	width: 33.3%;
+	float: left;
+} 
+.share_out ul li a{
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+.share_out ul li a img{
+	width: 50px;
+	margin-top: 6px;
+}
+.share_out ul li a span{
+	display: block;
+}
+/*box*/
+.box{
+	width: 90%;
+	padding: 0 5%;
+	line-height: 41px;
+	border-radius: 4px;
+	background: white;
+}
+/*teaty*/
+.teaty_out{
+	width: 100%;
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	z-index: 999;
+	background: rgba(0,0,0,0.5);
+	display: none;
+}
+.teaty_out div{
+	width: 90%;
+	margin: 0 5%;
+	height: 80%;
+	margin: auto;
+	background: white;
+	border-radius: 6px;
+	margin-top: 30px;
+	text-indent: 2em;
+	overflow: auto;
+}
+.teaty_out p{
+	width: 90%;
+	margin: 0 5%;
+}
+.teaty_out div span{
+	display: block;
+	width: 100%;
+    line-height: 40px;
+    border: none;
+    border-radius: 2px;
+    margin-top: 10px;
+    text-align: center;
+    color: #db4d11;
+}
+.teaty_out a{
+	color: white;
+	font-size: 1.2em;
+	width: 40px;
+	line-height: 40px;
+	display: block;
+	margin: auto;
+	margin-top: 14px;
+}
+
+/*photo*/
+.poto{
+	width: 100%;
+	height: 160px;
+	float: left;
+	margin-top: 10px;
+	background: rgba(0,0,0,0.5);
+	margin-bottom: 10px;
+}
+.poto_win{
+	width: 100%;
+	height: 100%;
+	border-radius: 4px;
+	overflow: hidden;
+}
+.poto_win li{
+	width: 86%;
+	float: left;
+	margin: 0 7%;
+	height: 40px;
+	line-height: 40px;
+	margin-top: 10px;
+	background: white;
+	text-align: center;
+	border-radius: 4px;
+}
+.poto_box{
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+}
+.poto_box li{
+	float: left;
+	width: 19%;
+	height: 40%;
+	margin-left: 1%;
+	-webkit-transition:1s;
+	position: relative;
+}
+.poto_box li img{
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+.poto_box li div{
+	width: 100%;
+	height: 100%;
+	background: url(../images/camer.png) no-repeat center;
+	background-size: 40px;
+	margin: 0;
+}
+.poto_box li a{
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	width: 30px;
+	height: 30px;
+	background: url(../images/img_delat.png) no-repeat center;
+	background-size: 20px;
+	display: none;
+}
+.affirm{
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0,0.5);
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	display: none;
+}
+.affirm li{
+	width: 90%;
+	margin: 0 5%;
+	background: white;
+	height: 40px;
+	margin-top: 10px;
+	border-radius: 4px;
+	text-align: center;
+	line-height: 40px;
+	font-size: 1.2em;
+}
+.affirm li:nth-of-type(1){
+	margin-top: 30px;
+}
+.add_poto{
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0,0.5);
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	display: none;
+}
+.add_poto li{
+	width: 90%;
+	margin: 0 5%;
+	background: white;
+	height: 36px;
+	margin-top: 10px;
+	border-radius: 4px;
+	text-align: center;
+	line-height: 40px;
+	font-size: 1.2em;
+}
+.add_poto li:nth-of-type(1){
+	margin-top: 16px;
+}
+
+/**/
+.time{
+	width: 90%;
+	padding: 0 5%;
+	overflow: hidden;
+}
+.time select{
+	width: 40%;
+	height: 40px;
+	border: #DDDDDD 1px solid;
+	margin-top: 10px;
+}
+.time .year{
+	float: left;
+}
+.time .month{
+	float: right;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
