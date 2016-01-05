@@ -21,7 +21,7 @@
 	<body style="background: #f2f2f2;">
 		<header class="header_one">
 			<a href="javascript:history.back(-1);"></a>
-			<div>查询进度</div>
+			<div>查询进度</div>  
 		</header>
 		<article class="check_rate">
 			<section class="rate_line">

@@ -20,7 +20,11 @@
 	<script type="text/javascript">
 		window.onload = function(){
 				html_hi();//body宽高
-				choice_food('footer dd a','#00b8e1');///footer	
+				choice_food('footer dd a','#00b8e1');///footer
+				
+				<#if msg??>
+			     alert("${msg!''}");
+			    </#if> 
 		};
 	</script>
 	<body style="background: #f2f2f2;">
@@ -68,7 +72,7 @@
 			</li>
 		</ul>
 		<div style="height: 80px;width: 100%; float: left;"></div>
-		<#if roleId?? && roleId == 0>
+		
 			<dl class="footer">
 				<dd>
 					<a href="/">
@@ -92,6 +96,6 @@
 					</a>
 				</dd>
 			</dl>
-		</#if>
+		
 	</body>
 </html>

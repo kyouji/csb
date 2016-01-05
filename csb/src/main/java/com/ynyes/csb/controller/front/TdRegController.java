@@ -183,6 +183,8 @@ public class TdRegController {
 		user.setLastLoginTime(new Date());
 		tdUserService.save(user);
 		
+		request.getSession().setAttribute("username", user.getUsername());
+		
 	    res.put("code", 0);
 	    return res;
 

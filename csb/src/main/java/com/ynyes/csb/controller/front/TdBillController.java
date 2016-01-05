@@ -177,7 +177,8 @@ public class TdBillController {
             map.addAttribute("bill", bill);
         }
         else{
-        	return "/";
+        	map.addAttribute("msg", "对不起，您没有上传票据的记录");
+        	return "/client/index";
         }
 
         return "/client/bill_check";

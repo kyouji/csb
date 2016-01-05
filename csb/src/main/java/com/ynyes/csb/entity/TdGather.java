@@ -119,7 +119,7 @@ public class TdGather {
     
     // 进项税额合计
     @Column
-    private String Totalincome;
+    private String totalVat;
 
 	public Long getId() {
 		return id;
@@ -305,20 +305,13 @@ public class TdGather {
 		this.taxDeduction = taxDeduction;
 	}
 
-	public String getTotalincome() {
-		return Totalincome;
+	public String getTotalVat() {
+		return totalVat;
 	}
 
-	public void setTotalincome(String totalincome) {
-		Totalincome = totalincome;
+	public void setTotalVat(String totalVat) {
+		this.totalVat = totalVat;
 	}
-    
-    
-	
 
-	
-
-	
- 
 }
   
