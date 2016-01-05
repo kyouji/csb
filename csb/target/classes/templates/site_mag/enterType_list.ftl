@@ -81,8 +81,8 @@ function __doPostBack(eventTarget, eventArgument) {
                 <td align="center">
 		            <div class="rule-single-select single-select">
 		            <select name="listIsEnable"  id="listIsEnable" style="display: none;">
-		                <option value="false" <#if item.isEnable?? && !item.isEnable>selected="selected"</#if> >否</option>
 		                <option value="true" <#if !item.isEnable?? || item.isEnable?? && item.isEnable>selected="selected"</#if> >是</option>
+		                <option value="false" <#if item.isEnable?? && !item.isEnable>selected="selected"</#if> >否</option>
 		            </select>
 		            </div>
 				</td>

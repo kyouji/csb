@@ -29,7 +29,7 @@
 		</div>
 		<ul class="index_nav01">
 			<li>
-				<a href="/bill/upload<#if user??>?id=${user.id?c}</#if>">
+				<a href="/bill/upload">
 					<div class="index_box01">
 						<img src="/client/images/index_icon01.png"/>
 						<p>上传票据</p>
@@ -38,7 +38,7 @@
 				</a>
 			</li>
 			<li>
-				<a href="#">
+				<a href="/bill/check">
 					<div class="index_box01">
 						<img src="/client/images/index_icon02.png"/>
 						<p>查询进度</p>

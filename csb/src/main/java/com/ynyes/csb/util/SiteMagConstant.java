@@ -29,7 +29,7 @@ public class SiteMagConstant {
     	else
     	{
     		backupPath = "src/main/resources/backup/";
-    	    imagePath = "src/main/resources/static/uploadImages/";
+    	    imagePath = "src/main/resources/static/images/";
     	}
     }
    
