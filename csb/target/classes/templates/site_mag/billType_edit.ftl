@@ -33,9 +33,9 @@
   <a href="/Verwalter/setting/billType/list" class="back"><i></i><span>返回列表页</span></a>
   <a href="/Verwalter/center" class="home"><i></i><span>首页</span></a>
   <i class="arrow"></i>
-  <a href="/Verwalter/setting/billType/list"><span>票据类别</span></a>
+  <a href="/Verwalter/setting/billType/list"><span>票据类型</span></a>
   <i class="arrow"></i>
-  <span>编辑票据类别</span>
+  <span>编辑票据类型</span>
 </div>
 <div class="line10"></div>
 <!--/导航栏-->
@@ -53,7 +53,7 @@
 
 <div class="tab-content">
   <dl>
-    <dt>类别名称</dt>
+    <dt>票据类型</dt>
     <dd>
         <input name="title" type="text" value="<#if billType??>${billType.title!""}</#if>" class="input normal" datatype="*1-255" sucmsg=" "> 
         <span class="Validform_checktip">*名称</span>

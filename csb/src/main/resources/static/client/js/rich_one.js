@@ -10,26 +10,7 @@ function html_hi(){
 	};
 	
 };
-////////////////////////////////////////
-/////////////////////////footer
-function choice_food(obj,colo){
-	var oCh = rich('.'+obj);
-	oCh[0].children[1].style.display = 'block';
-	oCh[0].children[0].style.display = 'none';
-	oCh[0].children[2].style.color = colo;
-	for(var i=0;i<oCh.length;i++){
-		oCh[i].onclick = function(){
-			for(var i=0;i<oCh.length;i++){
-				oCh[i].children[0].style.display = 'block';
-				oCh[i].children[1].style.display = 'none';
-				oCh[i].children[2].style.color = '';
-			};		
-			this.children[1].style.display = 'block';
-			this.children[0].style.display = 'none';
-			this.children[2].style.color = colo;
-		};
-	};
-};
+
 ////////////////////////////////////////
 ////////////////////////////////////////tel_out电话弹出
 function tel_out(obj){
@@ -148,19 +129,8 @@ function regEnterSubmit()
 					break;
 				}
 		}
-	var enterType = enterTypes[typeIndex].value;  //赋值
-	//typeId
-	var enterTypeIds = document.getElementsByName("enterTypeId");  //取出所有该名字的标签数组
-	var typeIdIndex = 0;   //初始化数组序号
-	for(var i=0; i<enterTypeIds.length; i++)
-		{
-			if(enterTypeIds[i].checked = true)    //遍历出被选中的那个radio
-				{
-					typeIdIndex = i;
-					break;
-				}
-		}
-	var enterTypeId = enterTypeIds[typeIdIndex].value;  //赋值
+	var enterType = $("input[name='enterType']:checked").val(); //赋值
+	var enterTypeId = $("input[name='enterTypeId']:checked").val(); //赋值
 	
 	var roleId = document.getElementById("roleId").value;
 	var realName = document.getElementById("realName").value;
@@ -188,7 +158,7 @@ function regEnterSubmit()
 			}
 			else{
 				alert("注册成功！欢迎使用财税宝")
-				location.href="/";
+				location.href="/user/info?hatu=0";
 			}
 	      }
 	  });
@@ -220,7 +190,7 @@ function regAccSubmit()
 			}
 			else{
 				alert("注册成功！欢迎使用财税宝")
-				location.href="/";
+				location.href="/user/info?hatu=1";
 			}
 	      }
 	  });
@@ -230,10 +200,10 @@ function regAccSubmit()
 function selectType(id)
 {
 	$(".input02").removeClass("inputSelected");
-	$(".type_radio").removeAttr("selected");
+	$(".type_radio").removeAttr("checked");
 	
-	$("#enterType"+id).attr("selected","selected");
-	$("#enterTypeId"+id).attr("selected","selected");
+	$("#enterType"+id).attr("checked","checked");
+	$("#enterTypeId"+id).attr("checked","checked");
 	$("#type"+id).addClass("inputSelected");
 }	
 

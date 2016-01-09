@@ -33,7 +33,8 @@ public class TdIndexController {
 
     @RequestMapping
     public String index(HttpServletRequest req, Device device, ModelMap map) {        
-        
+    	tdCommonService.setHeader(map, req); 
+    	
         String username = (String) req.getSession().getAttribute("username");
         if(null == username)
         {
@@ -53,7 +54,8 @@ public class TdIndexController {
     
     @RequestMapping("/index")
     public String Index(HttpServletRequest req, Device device, ModelMap map) {        
-        
+    	tdCommonService.setHeader(map, req); 
+    	
         String username = (String) req.getSession().getAttribute("username");
         if(null == username)
         {

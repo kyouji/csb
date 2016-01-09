@@ -22,14 +22,6 @@ public class TdBill {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
-    // 排序
-    @Column
-    private Long  sortId;
-    
-    //用户名
-    @Column
-    private String username;
-    
     //用户id
     @Column
     private Long userId;
@@ -51,10 +43,18 @@ public class TdBill {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date time;
     
+    //处理时间
+    @Column
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date finishTime;
+    
     // 票据类型id
     @Column
     private Long billTypeId;
     
+    // 备注
+    @Column
+    private String remark;
 
 	public Long getId() {
 		return id;
@@ -64,28 +64,12 @@ public class TdBill {
 		this.id = id;
 	}
 
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
 	public Long getUserId() {
 		return userId;
 	}
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
-	}
-
-	public Long getSortId() {
-		return sortId;
-	}
-
-	public void setSortId(Long sortId) {
-		this.sortId = sortId;
 	}
 
 	public String getTitle() {
@@ -112,14 +96,6 @@ public class TdBill {
 		this.imgUrl = imgUrl;
 	}
 
-	public Long getBillTypeId() {
-		return billTypeId;
-	}
-
-	public void setBillTypeId(Long billTypeId) {
-		this.billTypeId = billTypeId;
-	}
-
 	public Date getTime() {
 		return time;
 	}
@@ -128,9 +104,29 @@ public class TdBill {
 		this.time = time;
 	}
 
-	
+	public Long getBillTypeId() {
+		return billTypeId;
+	}
 
-	
- 
+	public void setBillTypeId(Long billTypeId) {
+		this.billTypeId = billTypeId;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public Date getFinishTime() {
+		return finishTime;
+	}
+
+	public void setFinishTime(Date finishTime) {
+		this.finishTime = finishTime;
+	}
+
 }
   

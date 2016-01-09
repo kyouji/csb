@@ -26,19 +26,19 @@
 		<article class="check_rate">
 			<section class="rate_line">
 				<div class="rate_box">
-					<span><a></a></span>
+					<#if bill.statusId??><span><a></a></span></#if>
 				</div>
 				<div class="rate_box">
-					<span><a></a></span>
+					<#if bill.statusId?? && bill.statusId gt 2><span><a></a></span></#if>
 				</div>
 				<div class="rate_box">
-					<span><a></a></span>
+					<#if bill.statusId?? && bill.statusId gt 3><span><a></a></span></#if>
 				</div>
 				<div class="rate_box">
-					<span><a></a></span>
+					<#if bill.statusId?? && bill.statusId gt 4><span><a></a></span></#if>
 				</div>
 				<div class="rate_box">
-					<span><a></a></span>
+					<#if bill.statusId?? && bill.statusId gt 5><span><a></a></span></#if>
 				</div>
 			</section>
 			<ul class="rate_go">

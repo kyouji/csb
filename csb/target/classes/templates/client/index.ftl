@@ -4,12 +4,12 @@
 		<style type="text/css">
 			body{width: 100%;height: 100%;}
 		</style>
-		<meta name="keywords" content="">
-		<meta name="description" content="">
-		<meta name="copyright" content="" />
+		<meta name="keywords" content="${site.seoKeywords!''}">
+		<meta name="description" content="${site.seoDescription!''}">
+		<meta name="copyright" content="${site.copyright!''}" />
 		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 		<meta charset="utf-8">
-		<title>首页</title>
+		<title><#if site??>${site.seoTitle!''}-</#if>首页</title>
 		
 		<link rel="stylesheet" type="text/css" href="/client/css/rich_base.css"/>
 		<link rel="stylesheet" type="text/css" href="/client/css/rich_other.css"/>
@@ -26,6 +26,27 @@
 			     alert("${msg!''}");
 			    </#if> 
 		};
+		
+		////////////////////////////////////////
+/////////////////////////footer
+function choice_food(obj,colo){
+	var oCh = rich('.'+obj);
+	oCh[0].children[1].style.display = 'block';
+	oCh[0].children[0].style.display = 'none';
+	oCh[0].children[2].style.color = colo;
+	for(var i=0;i<oCh.length;i++){
+		oCh[i].onclick = function(){
+			for(var i=0;i<oCh.length;i++){
+				oCh[i].children[0].style.display = 'block';
+				oCh[i].children[1].style.display = 'none';
+				oCh[i].children[2].style.color = '';
+			};		
+			this.children[1].style.display = 'block';
+			this.children[0].style.display = 'none';
+			this.children[2].style.color = colo;
+		};
+	};
+};
 	</script>
 	<body style="background: #f2f2f2;">
 		<div class="index_banner">
@@ -53,19 +74,19 @@
 		</ul>
 		<ul class="index_nav02">
 			<li>
-				<a href="#">
+				<a href="/gather/confirm">
 						<img src="/client/images/index_icon03.png"/>
 						<p>票据整理</p>
 				</a>
 			</li>
 			<li>
-				<a href="#">
+				<a href="/finance/detail">
 						<img src="/client/images/index_icon04.png"/>
 						<p>财务状况</p>
 				</a>
 			</li>
 			<li>
-				<a href="#">
+				<a href="/data">
 						<img src="/client/images/index_icon05.png"/>
 						<p>资料下载</p>
 				</a>
@@ -82,14 +103,14 @@
 					</a>
 				</dd>
 				<dd>
-					<a href="/logout">
+					<a href="/apply">
 						<img src="/client/images/foote02.png"/>
 						<img src="/client/images/foote22.png"/>					
 						<span>我要</span>
 					</a>
 				</dd>
 				<dd>
-					<a href="/login">
+					<a href="/user/center">
 						<img src="/client/images/foote03.png"/>
 						<img src="/client/images/foote33.png"/>					
 						<span>财税宝</span>

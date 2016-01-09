@@ -90,9 +90,20 @@ public class TdGatherService {
     
     public List<TdGather> findAllOrderBySortIdAsc()
     {
-        Sort sort = new Sort(Direction.ASC, "sortId");
+        Sort sort = new Sort(Direction.ASC, "sortId").and(new Sort(Direction.DESC, "time"));
         
         return (List<TdGather>) repository.findAll(sort);
+    }
+    
+    /**
+     * 根据username查找所有【票据整理】信息
+     * @return
+     */
+    public List<TdGather> findByUsername(String username)
+    {
+        Sort sort = new Sort(Direction.ASC, "sortId").and(new Sort(Direction.DESC, "time"));
+        
+        return (List<TdGather>) repository.findByUsername(username, sort);
     }
     
     

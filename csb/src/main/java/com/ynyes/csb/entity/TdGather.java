@@ -38,7 +38,7 @@ public class TdGather {
     @Column
     private Long statusId;
     
-    //填写时间
+    //填写时间（月份）
     @Column
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date time;
@@ -48,78 +48,150 @@ public class TdGather {
     ---------------------------------------------------------*/
     // 【普票】数量
     @Column
-    private String generalAmount;
+    private Double generalAmount;
     
     // 【普票】不含税收入
     @Column
-    private String generalIncome;
+    private Double generalIncome;
     
     // 【普票】销项税
     @Column
-    private String generalTax;
+    private Double generalTax;
     
     // 【专票】数量
     @Column
-    private String specialAmount;
+    private Double specialAmount;
     
     // 【专票】不含税收入
     @Column
-    private String specialIncome;
+    private Double specialIncome;
     
     // 【专票】销项税
     @Column
-    private String specialTax;
+    private Double specialTax;
     
     // 【不开票】收入
     @Column
-    private String noTicketIncome;
+    private Double noTicketIncome;
     
     // 【不开票】销项税
     @Column
-    private String noTicketTax;
+    private Double noTicketTax;
     
     // 不含税收入合计
     @Column
-    private String TotalIncome;
+    private Double TotalIncome;
     
     // 销项税合计
     @Column
-    private String TotalTax;
+    private Double TotalTax;
     
     /*---------------------------------------------------------
     ===============  进货 =================
     ---------------------------------------------------------*/
     // 上月留抵税金
     @Column
-    private String taxRetention;
+    private Double taxRetention;
     
     // 【上月进项税额】数量
     @Column
-    private String vatAmount;
+    private Double vatAmount;
     
     // 【上月进项税额】税额
     @Column
-    private String vat;
+    private Double vat;
     
     // 【运费抵扣】数量
     @Column
-    private String transDeductionAmount;
+    private Double transDeductionAmount;
     
     // 【运费抵扣】税额
     @Column
-    private String transDeduction;
+    private Double transDeduction;
     
     // 【增值税抵扣】数量
     @Column
-    private String taxDeductionAmount;
+    private Double taxDeductionAmount;
     
     // 【增值税抵扣】税额
     @Column
-    private String taxDeduction;
+    private Double taxDeduction;
     
     // 进项税额合计
     @Column
-    private String totalVat;
+    private Double totalVat;
+    
+    /*---------------------------------------------------------
+    ===============  应纳税金 ==============
+    ---------------------------------------------------------*/
+
+    // 【增值税】金额
+    @Column
+    private Double taxAdd;
+    
+    // 【增值税】税负
+    @Column
+    private Double taxBearing;
+    
+    // 【所得税】金额
+    @Column
+    private Double incomeTax;
+    
+    // 【城建税】金额
+    @Column
+    private Double urbanTax;
+    
+    // 【教育附加】金额
+    @Column
+    private Double eduAdd;
+    
+    // 【地方教育附加】金额
+    @Column
+    private Double eduAddLocal;
+    
+    // 【地税合计】金额
+    @Column
+    private Double landTax;
+    
+    /*---------------------------------------------------------
+    ===============  待抵扣================
+    ---------------------------------------------------------*/
+    
+
+    
+    // 【抵扣联】未收，金额
+    @Column
+    private Double deTodo;
+    
+    // 【抵扣联】未收，数量
+    @Column
+    private Double deTodoAmount;
+    
+    // 【抵扣联】未收，最早日期
+    @Column
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date deTodoDate;
+    
+    // 【抵扣联】已收，金额
+    @Column
+    private Double deDone;
+    
+    // 【抵扣联】已收，数量
+    @Column
+    private Double deDoneAmount;
+    
+    // 【抵扣联】已收，最早日期
+    @Column
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date deDoneDate;
+    
+    // 【本月应纳所得税】
+    @Column
+    private Double incomeTaxTodo;
+    
+    //补充说明
+    @Column
+    private Double remark;
 
 	public Long getId() {
 		return id;
@@ -169,148 +241,268 @@ public class TdGather {
 		this.time = time;
 	}
 
-	public String getGeneralAmount() {
+	public Double getGeneralAmount() {
 		return generalAmount;
 	}
 
-	public void setGeneralAmount(String generalAmount) {
+	public void setGeneralAmount(Double generalAmount) {
 		this.generalAmount = generalAmount;
 	}
 
-	public String getGeneralIncome() {
+	public Double getGeneralIncome() {
 		return generalIncome;
 	}
 
-	public void setGeneralIncome(String generalIncome) {
+	public void setGeneralIncome(Double generalIncome) {
 		this.generalIncome = generalIncome;
 	}
 
-	public String getGeneralTax() {
+	public Double getGeneralTax() {
 		return generalTax;
 	}
 
-	public void setGeneralTax(String generalTax) {
+	public void setGeneralTax(Double generalTax) {
 		this.generalTax = generalTax;
 	}
 
-	public String getSpecialAmount() {
+	public Double getSpecialAmount() {
 		return specialAmount;
 	}
 
-	public void setSpecialAmount(String specialAmount) {
+	public void setSpecialAmount(Double specialAmount) {
 		this.specialAmount = specialAmount;
 	}
 
-	public String getSpecialIncome() {
+	public Double getSpecialIncome() {
 		return specialIncome;
 	}
 
-	public void setSpecialIncome(String specialIncome) {
+	public void setSpecialIncome(Double specialIncome) {
 		this.specialIncome = specialIncome;
 	}
 
-	public String getSpecialTax() {
+	public Double getSpecialTax() {
 		return specialTax;
 	}
 
-	public void setSpecialTax(String specialTax) {
+	public void setSpecialTax(Double specialTax) {
 		this.specialTax = specialTax;
 	}
 
-	public String getNoTicketIncome() {
+	public Double getNoTicketIncome() {
 		return noTicketIncome;
 	}
 
-	public void setNoTicketIncome(String noTicketIncome) {
+	public void setNoTicketIncome(Double noTicketIncome) {
 		this.noTicketIncome = noTicketIncome;
 	}
 
-	public String getNoTicketTax() {
+	public Double getNoTicketTax() {
 		return noTicketTax;
 	}
 
-	public void setNoTicketTax(String noTicketTax) {
+	public void setNoTicketTax(Double noTicketTax) {
 		this.noTicketTax = noTicketTax;
 	}
 
-	public String getTotalIncome() {
+	public Double getTotalIncome() {
 		return TotalIncome;
 	}
 
-	public void setTotalIncome(String totalIncome) {
+	public void setTotalIncome(Double totalIncome) {
 		TotalIncome = totalIncome;
 	}
 
-	public String getTotalTax() {
+	public Double getTotalTax() {
 		return TotalTax;
 	}
 
-	public void setTotalTax(String totalTax) {
+	public void setTotalTax(Double totalTax) {
 		TotalTax = totalTax;
 	}
 
-	public String getTaxRetention() {
+	public Double getTaxRetention() {
 		return taxRetention;
 	}
 
-	public void setTaxRetention(String taxRetention) {
+	public void setTaxRetention(Double taxRetention) {
 		this.taxRetention = taxRetention;
 	}
 
-	public String getVatAmount() {
+	public Double getVatAmount() {
 		return vatAmount;
 	}
 
-	public void setVatAmount(String vatAmount) {
+	public void setVatAmount(Double vatAmount) {
 		this.vatAmount = vatAmount;
 	}
 
-	public String getVat() {
+	public Double getVat() {
 		return vat;
 	}
 
-	public void setVat(String vat) {
+	public void setVat(Double vat) {
 		this.vat = vat;
 	}
 
-	public String getTransDeductionAmount() {
+	public Double getTransDeductionAmount() {
 		return transDeductionAmount;
 	}
 
-	public void setTransDeductionAmount(String transDeductionAmount) {
+	public void setTransDeductionAmount(Double transDeductionAmount) {
 		this.transDeductionAmount = transDeductionAmount;
 	}
 
-	public String getTransDeduction() {
+	public Double getTransDeduction() {
 		return transDeduction;
 	}
 
-	public void setTransDeduction(String transDeduction) {
+	public void setTransDeduction(Double transDeduction) {
 		this.transDeduction = transDeduction;
 	}
 
-	public String getTaxDeductionAmount() {
+	public Double getTaxDeductionAmount() {
 		return taxDeductionAmount;
 	}
 
-	public void setTaxDeductionAmount(String taxDeductionAmount) {
+	public void setTaxDeductionAmount(Double taxDeductionAmount) {
 		this.taxDeductionAmount = taxDeductionAmount;
 	}
 
-	public String getTaxDeduction() {
+	public Double getTaxDeduction() {
 		return taxDeduction;
 	}
 
-	public void setTaxDeduction(String taxDeduction) {
+	public void setTaxDeduction(Double taxDeduction) {
 		this.taxDeduction = taxDeduction;
 	}
 
-	public String getTotalVat() {
+	public Double getTotalVat() {
 		return totalVat;
 	}
 
-	public void setTotalVat(String totalVat) {
+	public void setTotalVat(Double totalVat) {
 		this.totalVat = totalVat;
+	}
+
+	public Double getTaxAdd() {
+		return taxAdd;
+	}
+
+	public void setTaxAdd(Double taxAdd) {
+		this.taxAdd = taxAdd;
+	}
+
+	public Double getTaxBearing() {
+		return taxBearing;
+	}
+
+	public void setTaxBearing(Double taxBearing) {
+		this.taxBearing = taxBearing;
+	}
+
+	public Double getIncomeTax() {
+		return incomeTax;
+	}
+
+	public void setIncomeTax(Double incomeTax) {
+		this.incomeTax = incomeTax;
+	}
+
+	public Double getUrbanTax() {
+		return urbanTax;
+	}
+
+	public void setUrbanTax(Double urbanTax) {
+		this.urbanTax = urbanTax;
+	}
+
+	public Double getEduAdd() {
+		return eduAdd;
+	}
+
+	public void setEduAdd(Double eduAdd) {
+		this.eduAdd = eduAdd;
+	}
+
+	public Double getEduAddLocal() {
+		return eduAddLocal;
+	}
+
+	public void setEduAddLocal(Double eduAddLocal) {
+		this.eduAddLocal = eduAddLocal;
+	}
+
+	public Double getLandTax() {
+		return landTax;
+	}
+
+	public void setLandTax(Double landTax) {
+		this.landTax = landTax;
+	}
+
+	public Double getDeTodo() {
+		return deTodo;
+	}
+
+	public void setDeTodo(Double deTodo) {
+		this.deTodo = deTodo;
+	}
+
+	public Double getDeTodoAmount() {
+		return deTodoAmount;
+	}
+
+	public void setDeTodoAmount(Double deTodoAmount) {
+		this.deTodoAmount = deTodoAmount;
+	}
+
+	public Date getDeTodoDate() {
+		return deTodoDate;
+	}
+
+	public void setDeTodoDate(Date deTodoDate) {
+		this.deTodoDate = deTodoDate;
+	}
+
+	public Double getDeDone() {
+		return deDone;
+	}
+
+	public void setDeDone(Double deDone) {
+		this.deDone = deDone;
+	}
+
+	public Double getDeDoneAmount() {
+		return deDoneAmount;
+	}
+
+	public void setDeDoneAmount(Double deDoneAmount) {
+		this.deDoneAmount = deDoneAmount;
+	}
+
+	public Date getDeDoneDate() {
+		return deDoneDate;
+	}
+
+	public void setDeDoneDate(Date deDoneDate) {
+		this.deDoneDate = deDoneDate;
+	}
+
+	public Double getIncomeTaxTodo() {
+		return incomeTaxTodo;
+	}
+
+	public void setIncomeTaxTodo(Double incomeTaxTodo) {
+		this.incomeTaxTodo = incomeTaxTodo;
+	}
+
+	public Double getRemark() {
+		return remark;
+	}
+
+	public void setRemark(Double remark) {
+		this.remark = remark;
 	}
 
 }

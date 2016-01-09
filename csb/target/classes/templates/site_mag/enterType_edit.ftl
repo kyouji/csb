@@ -33,9 +33,9 @@
   <a href="/Verwalter/setting/enterType/list" class="back"><i></i><span>返回列表页</span></a>
   <a href="/Verwalter/center" class="home"><i></i><span>首页</span></a>
   <i class="arrow"></i>
-  <a href="/Verwalter/setting/enterType/list"><span>活动地区</span></a>
+  <a href="/Verwalter/setting/enterType/list"><span>公司类型</span></a>
   <i class="arrow"></i>
-  <span>编辑活动地区</span>
+  <span>编辑公司类型</span>
 </div>
 <div class="line10"></div>
 <!--/导航栏-->

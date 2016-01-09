@@ -20,8 +20,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
+import com.ynyes.csb.entity.TdApply;
+import com.ynyes.csb.entity.TdApplyType;
+import com.ynyes.csb.entity.TdBill;
 import com.ynyes.csb.entity.TdUser;
+import com.ynyes.csb.service.TdApplyService;
+import com.ynyes.csb.service.TdApplyTypeService;
+import com.ynyes.csb.service.TdAreaService;
 import com.ynyes.csb.service.TdManagerLogService;
 import com.ynyes.csb.service.TdUserService;
 import com.ynyes.csb.util.SiteMagConstant;
@@ -41,6 +46,15 @@ public class TdManagerUserController {
     
     @Autowired
     TdManagerLogService tdManagerLogService;
+    
+    @Autowired
+    TdApplyService tdApplyService;
+    
+    @Autowired
+    TdAreaService tdAreaService;
+    
+    @Autowired
+    TdApplyTypeService tdApplyTypeService;
     
     @RequestMapping(value="/check", method = RequestMethod.POST)
     @ResponseBody
@@ -127,11 +141,11 @@ public class TdManagerUserController {
         return res;
     }
     
-    @RequestMapping(value="/list")
+    @RequestMapping(value="/list/{roleId}")
     public String setting(Integer page,
                           Integer size,
                           String keywords,
-                          Long roleId,
+                          @PathVariable Long roleId,
                           String __EVENTTARGET,
                           String __EVENTARGUMENT,
                           String __VIEWSTATE,
@@ -184,38 +198,28 @@ public class TdManagerUserController {
 
         Page<TdUser> userPage = null;
         
-//        if (null == roleId)
-//        {
-//            if (null == keywords || "".equalsIgnoreCase(keywords))
-//            {
-//                userPage = tdUserService.findAllOrderBySortIdAsc(page, size);
-//            }
-//            else
-//            {
-//                userPage = tdUserService.searchAndOrderByIdDesc(keywords, page, size);
-//            }
-//        }
-//        else
-//        {
-//            if (null == keywords || "".equalsIgnoreCase(keywords))
-//            {
-//                userPage = tdUserService.findByRoleIdOrderByIdDesc(roleId, page, size);
-//            }
-//            else
-//            {
-//                userPage = tdUserService.searchAndFindByRoleIdOrderByIdDesc(keywords, roleId, page, size);
-//            }
-//        }
-        
-        //只查找企业
-      if (null == keywords || "".equalsIgnoreCase(keywords))
-      {
-          userPage = tdUserService.findByRoleIdOrderByIdDesc(1L, page, size);
-      }
-      else
-      {
-          userPage = tdUserService.searchAndFindByRoleIdOrderByIdDesc(keywords, 1L, page, size);
-      }
+        if (null == roleId)
+        {
+            if (null == keywords || "".equalsIgnoreCase(keywords))
+            {
+                userPage = tdUserService.findAllOrderBySortIdAsc(page, size);
+            }
+            else
+            {
+                userPage = tdUserService.searchAndOrderByIdDesc(keywords, page, size);
+            }
+        }
+        else
+        {
+            if (null == keywords || "".equalsIgnoreCase(keywords))
+            {
+                userPage = tdUserService.findByRoleIdOrderByIdDesc(roleId, page, size);
+            }
+            else
+            {
+                userPage = tdUserService.searchAndFindByRoleIdOrderByIdDesc(keywords, roleId, page, size);
+            }
+        }
         
         map.addAttribute("user_page", userPage);
         
@@ -254,7 +258,7 @@ public class TdManagerUserController {
 
     
     @RequestMapping(value="/save")
-    public String orderEdit(TdUser tdUser,Long totalPoints, String totalPointsRemarks,
+    public String orderEdit(TdUser tdUser,
                         String __VIEWSTATE,
                         ModelMap map,
                         HttpServletRequest req){
@@ -282,7 +286,7 @@ public class TdManagerUserController {
         	
         }
         
-        return "redirect:/Verwalter/user/list/";
+        return "redirect:/Verwalter/user/list/"+tdUser.getRoleId();
     }
     
     
@@ -317,168 +321,168 @@ public class TdManagerUserController {
     
 
 
+    //如果type是apply的话，就是用户的申请表单列表
+    @RequestMapping(value="/{type}/list")
+    public String list(@PathVariable String type,
+                        Integer page,
+                        Integer size,
+                        Long statusId,
+                        String keywords,
+                        Long applyTypeId,
+                        String __EVENTTARGET,
+                        String __EVENTARGUMENT,
+                        String __VIEWSTATE,
+                        Long[] listId,
+                        Integer[] listChkId,
+                        Long[] listSortId,
+                        ModelMap map,
+                        HttpServletRequest req){
+        String username = (String) req.getSession().getAttribute("manager");
+        if (null == username)
+        {
+            return "redirect:/Verwalter/login";
+        }
+        if (null != __EVENTTARGET)
+        {
+            if (__EVENTTARGET.equalsIgnoreCase("btnPage"))
+            {
+                if (null != __EVENTARGUMENT)
+                {
+                    page = Integer.parseInt(__EVENTARGUMENT);
+                } 
+            }
+            else if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
+            {
+                btnDelete(type, listId, listChkId);
+            }
+        }
+        
+        if (null == page || page < 0)
+        {
+            page = 0;
+        }
+        
+        if (null == size || size <= 0)
+        {
+            size = SiteMagConstant.pageSize;;
+        }
+        
+        if (null != keywords)
+        {
+            keywords = keywords.trim();
+        }
+        
+        map.addAttribute("page", page);
+        map.addAttribute("size", size);
+        map.addAttribute("statusId", statusId);
+        map.addAttribute("keywords", keywords);
+        map.addAttribute("__EVENTTARGET", __EVENTTARGET);
+        map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
+        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+            
+        if (null != type)
+        {
+
+            if (type.equalsIgnoreCase("apply")) // 业务申请表单
+            {
+            	Page<TdApply> applyPage =  null;
+            	if(null == applyTypeId)
+            	{
+            		if(null == statusId)
+            		{
+            			applyPage= tdApplyService.findAllOrderBySortIdAsc(page, size);
+            		}
+            		else{
+            			applyPage= tdApplyService.findByStatusIdOrderBySortIdAsc(statusId, page,size);
+            		}
+            	}
+            	else{
+            		if(null == statusId)
+            		{
+            			applyPage= tdApplyService.findByApplyTypeIdOrderBySortIdAsc(applyTypeId, page, size);
+            		}
+            		else{
+            			applyPage= tdApplyService.findByApplyTypeIdAndStatusIdOrderBySortIdAsc(applyTypeId, statusId ,page, size);
+            		}
+            	}
+
+            	map.addAttribute("applyTypeId", applyTypeId);
+                map.addAttribute("apply_page", applyPage);
+                
+                for(TdApply item : applyPage.getContent())
+                {
+                	TdApplyType applyType = tdApplyTypeService.findOne(item.getApplyTypeId());
+                	map.addAttribute("applyType_"+item.getId(), applyType.getTitle());
+                	
+                	TdUser tdUser = tdUserService.findOne(item.getApplyTypeId());
+                	map.addAttribute("user_"+item.getId(), tdUser);
+                }
+                
+                map.addAttribute("applyType_list", tdApplyTypeService.findByIsEnableTrueOrderBySortIdAsc());
+                return "/site_mag/user_apply_list";
+            }
+        }
+        
+        return "/site_mag/error_404";
+    }
     
-//    @RequestMapping(value="/{type}/list")
-//    public String list(@PathVariable String type,
-//                        Integer page,
-//                        Integer size,
-//                        Long userId,
-//                        Long statusId,
-//                        String keywords,
-//                        String __EVENTTARGET,
-//                        String __EVENTARGUMENT,
-//                        String __VIEWSTATE,
-//                        Long[] listId,
-//                        Integer[] listChkId,
-//                        Long[] listSortId,
-//                        ModelMap map,
-//                        HttpServletRequest req){
-//        String username = (String) req.getSession().getAttribute("manager");
-//        if (null == username)
-//        {
-//            return "redirect:/Verwalter/login";
-//        }
-//        if (null != __EVENTTARGET)
-//        {
-//            if (__EVENTTARGET.equalsIgnoreCase("btnPage"))
-//            {
-//                if (null != __EVENTARGUMENT)
-//                {
-//                    page = Integer.parseInt(__EVENTARGUMENT);
-//                } 
-//            }
-//            else if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
-//            {
-//                btnDelete(type, listId, listChkId);
-//            }
-//            else if (__EVENTTARGET.equalsIgnoreCase("btnSave"))
-//            {
-//                btnSave(type, listId, listSortId);
-//            }
-//            else if (__EVENTTARGET.equalsIgnoreCase("btnVerify"))
-//            {
-//                btnVerify(type, listId, listChkId);
-//            }
-//        }
-//        
-//        if (null == page || page < 0)
-//        {
-//            page = 0;
-//        }
-//        
-//        if (null == size || size <= 0)
-//        {
-//            size = SiteMagConstant.pageSize;;
-//        }
-//        
-//        if (null != keywords)
-//        {
-//            keywords = keywords.trim();
-//        }
-//        
-//        map.addAttribute("page", page);
-//        map.addAttribute("size", size);
-//        map.addAttribute("userId", userId);
-//        map.addAttribute("statusId", statusId);
-//        map.addAttribute("keywords", keywords);
-//        map.addAttribute("__EVENTTARGET", __EVENTTARGET);
-//        map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
-//        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
-//            
-//        if (null != type)
-//        {
-//            if (type.equalsIgnoreCase("point")) // 积分
-//            {
-//                if (null == userId)
-//                {
-//                    return "/site_mag/error_404";
-//                }
-//                
-//                TdUser user = tdUserService.findOne(userId);
-//                
-//                if (null == user || null == user.getUsername())
-//                {
-//                    return "/site_mag/error_404";
-//                }
-//                
-//                map.addAttribute("user_point_page", tdUserPointService.findByUsername(user.getUsername(), page, size));
-//                return "/site_mag/user_point_list";
-//            }
-//            else if (type.equalsIgnoreCase("collect")) // 关注
-//            {
-//                if (null == userId)
-//                {
-//                    return "/site_mag/error_404";
-//                }
-//                
-//                TdUser user = tdUserService.findOne(userId);
-//                
-//                if (null == user || null == user.getUsername())
-//                {
-//                    return "/site_mag/error_404";
-//                }
-//                
-//                map.addAttribute("user_collect_page", tdUserCollectService.findByUsername(user.getUsername(), page, size));
-//                return "/site_mag/user_collect_list";
-//            }
-//            else if (type.equalsIgnoreCase("recent")) // 最近浏览
-//            {
-//                if (null == userId)
-//                {
-//                    return "/site_mag/error_404";
-//                }
-//                
-//                TdUser user = tdUserService.findOne(userId);
-//                
-//                if (null == user || null == user.getUsername())
-//                {
-//                    return "/site_mag/error_404";
-//                }
-//                
-//                map.addAttribute("user_recent_page", tdUserRecentVisitService.findByUsernameOrderByVisitTimeDesc(user.getUsername(), page, size));
-//                return "/site_mag/user_recent_list";
-//            }
-//            else if (type.equalsIgnoreCase("reward")) // 返现
-//            {
-//                if (null == userId)
-//                {
-//                    return "/site_mag/error_404";
-//                }
-//                
-//                TdUser user = tdUserService.findOne(userId);
-//                
-//                if (null == user || null == user.getUsername())
-//                {
-//                    return "/site_mag/error_404";
-//                }
-//                
-//                map.addAttribute("user_reward_page", tdUserCashRewardService.findByUsernameOrderByIdDesc(user.getUsername(), page, size));
-//                return "/site_mag/user_reward_list";
-//            }
-//            else if (type.equalsIgnoreCase("level")) // 用户等级
-//            {
-//                map.addAttribute("user_level_page", tdUserLevelService.findAllOrderBySortIdAsc(page, size));
-//                return "/site_mag/user_level_list";
-//            }
-//            else if (type.equalsIgnoreCase("consult")) // 用户咨询
-//            {
-//                map.addAttribute("user_consult_page", findTdUserConsult(statusId, keywords, page, size));
-//                return "/site_mag/user_consult_list";
-//            }
-//            else if (type.equalsIgnoreCase("comment")) // 用户评论
-//            {
-//                map.addAttribute("user_comment_page", findTdUserComment(statusId, keywords, page, size));
-//                return "/site_mag/user_comment_list";
-//            }
-//            else if (type.equalsIgnoreCase("return")) // 退换货
-//            {
-//                map.addAttribute("user_return_page", findTdUserReturn(statusId, keywords, page, size));
-//                return "/site_mag/user_return_list";
-//            }
-//        }
-//        
-//        return "/site_mag/error_404";
-//    }
+    @RequestMapping(value="/apply/edit")
+    public String applyEdit(Long id,
+                        String __VIEWSTATE,
+                        ModelMap map,
+                        HttpServletRequest req){
+        String username = (String) req.getSession().getAttribute("manager");
+        if (null == username)
+        {
+            return "redirect:/Verwalter/login";
+        }
+        
+        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+      
+        if (null != id)
+        {
+        	TdApply tdApply = tdApplyService.findOne(id);
+            map.addAttribute("apply",tdApply);
+            map.addAttribute("user",tdUserService.findOne(tdApply.getUserId()));
+            
+            map.addAttribute("area",tdAreaService.findOne(tdApply.getAreaId()).getTitle());
+        }
+        return "/site_mag/user_apply_edit";
+    }
+    
+   @RequestMapping(value="/apply/save")
+   @ResponseBody
+   public Map<String,Object> applySave(Long id,
+	    					Long statusId,
+	    					String remark,
+	    					Long sortId,
+	                        ModelMap map,
+	                        HttpServletRequest req){
+		 Map<String, Object> res = new HashMap<String, Object>();
+			res.put("code", 1);
+			
+	        String username = (String) req.getSession().getAttribute("manager");
+	        if (null == username) {
+	        	res.put("msg", "请先登录！");
+	            return res;
+	        }
+	        
+	        TdApply tdApply = tdApplyService.findOne(id);
+	        if(null != statusId)
+	        {
+	        	tdApply.setStatusId(statusId);
+	        	tdApply.setRemark(remark);
+	        	tdApply.setSortId(sortId);
+	        	tdApply.setFinishTime(new Date());
+	        	tdApplyService.save(tdApply);
+	        	res.put("msg", "操作成功！");
+	        }
+
+			res.put("code", 0);
+
+			return res;
+	    }
+    
     
     @ModelAttribute
     public void getModel(@RequestParam(value = "userId", required = false) Long userId,
@@ -540,9 +544,11 @@ public class TdManagerUserController {
                 
                 if (type.equalsIgnoreCase("user")) // 用户
                 {
-                	
                     tdUserService.delete(tdUserService.findOne(id));
-                    
+                }
+                else if (type.equalsIgnoreCase("apply")) // 用户
+                {
+                    tdApplyService.delete(tdApplyService.findOne(id));
                 }
             }
         }

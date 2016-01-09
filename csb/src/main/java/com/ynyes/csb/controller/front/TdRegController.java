@@ -68,10 +68,12 @@ public class TdRegController {
 			
 			if (null != type &&type == 1)
 			{
+				map.addAttribute("changeRole", 1);
 				return "/client/reg_acc";
 			}
 			else{
 				map.addAttribute("enterType_list", tdEnterTypeService.findByIsEnableTrueOrderBySortIdAsc());
+				map.addAttribute("changeRole", 0);
 				return "/client/reg_enter";
 			}
 		}
@@ -183,6 +185,12 @@ public class TdRegController {
 		user.setLastLoginTime(new Date());
 		tdUserService.save(user);
 		
+        Long id = user.getId();
+        String number = String.format("%04d", id);
+        user.setNumber(number);
+        tdUserService.save(user);
+        
+		
 		request.getSession().setAttribute("username", user.getUsername());
 		
 	    res.put("code", 0);
@@ -207,9 +215,11 @@ public class TdRegController {
 			if(changeRole == 0L)
 			{
 				map.addAttribute("enterType_list", tdEnterTypeService.findByIsEnableTrueOrderBySortIdAsc());
+				map.addAttribute("changeRole", changeRole);
 				return "/client/reg_enter";
 			}
 			else if(changeRole == 1L){
+				map.addAttribute("changeRole", changeRole);
 				return "/client/reg_acc";
 			}
 		}

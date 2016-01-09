@@ -24,13 +24,6 @@
 			img_big();
 		};
 		
-		function addone(obj)
-		{
-			formSubmit();
-			var path = getFullPath(obj);
-			$("#choice_poto").css("background","url("+path+")");
-		}
-		
 		function formSubmit()
 		{
 			form = document.forms["upload"];
@@ -51,8 +44,8 @@
 			      success:function(data){
 					if (data.code == 1)
 					{
-						$("#get_war").css("display","block");
-			            $("#get_war").html(data.msg);
+						$(".get_war").css("display","block");
+			            $(".get_war").html(data.msg);
 			            if(data.login == 1)
 			            {
 			            	setTimeout("location.href='/login'",2000);
@@ -71,7 +64,7 @@
 			<input type="hidden" id="id" name="id" value="<#if user??>${user.id?c!''}</#if>"></input>
 			<input id="file" style="display:none;" class="area_save_btn" name="Filedata"  type="file" value="" onchange="javascript:formSubmit();"/>
 			<header class="header_one">
-				<a href="javascript:history.back(-1);"></a>
+				<a href="/index"></a>
 				<div>其他业务咨询</div>
 			</header>
 			<section class="poto">	
@@ -79,14 +72,14 @@
 					<#if bill_list??>
 						<#list bill_list as item>
 							<li>
-								<input type="hidden" class="billId" value="${item.id?c}">
 								<img src="/images/${item.imgUrl!''}"/>
 								<a></a>
+								<input type="hidden" class="billId" value="${item.id?c}">
 							</li>
 						</#list>
 					</#if>		
 					<li>
-						<div id="choice_poto" onclick="javascript:fileUpload();" >
+						<div id="choice_poto" >
 						</div>
 					</li>
 				</ul>
@@ -108,7 +101,7 @@
 					</#list>
 				</#if>		
 			</select>
-			<div class="get_war" style="display:none;">
+			<div class="get_war" style="display:none;widh:200px;" >
 				
 			</div>
 			<input class="get_sub" type="button" name="" id="billSubmit" onclick="javascript:billFinish();" value="开始上传票据" />

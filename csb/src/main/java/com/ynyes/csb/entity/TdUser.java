@@ -27,9 +27,13 @@ public class TdUser {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 	
+	// 头像
+	@Column
+	private String headImageUrl;
+	
 	// 证件照
 	@Column
-	private String headImageUri;
+	private String paperImageUri;
 	
 	// 用户名
 	@Column(nullable=false, unique=true)
@@ -63,10 +67,10 @@ public class TdUser {
 	@Column
 	private Long enterTypeId;
 
-	// 角色
+	// 角色 【0】公司；【1】会计
     @Column
     private Long roleId;
-
+    
 	// 注册时间
 	@Column
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
@@ -89,10 +93,42 @@ public class TdUser {
     @Column
     private Long sortId;
     
+    /*各种资料*/
+    
+    //累计利润
+    @Column
+    private Double totalProfit;
+    
+    //累计毛利率
+    @Column
+    private Double totalGross;
+    
+    //本年累计上缴增值税
+    @Column
+    private Double totalDeduction;
+    
+    //本年累计上缴增值税，税负
+    @Column
+    private Double taxBearing;
+    
+    //本年累计上缴所得税
+    @Column
+    private Double totalIncomeTax;
+    
+    //编号
+    @Column
+    private String number;
+   
 
-    public Long getId() {
+
+	
+	public Long getId() {
 		return id;
 	}
+
+
+
+
 
 
 	public void setId(Long id) {
@@ -100,14 +136,44 @@ public class TdUser {
 	}
 
 
-	public String getHeadImageUri() {
-		return headImageUri;
+
+
+
+
+	public String getHeadImageUrl() {
+		return headImageUrl;
 	}
 
 
-	public void setHeadImageUri(String headImageUri) {
-		this.headImageUri = headImageUri;
+
+
+
+
+	public void setHeadImageUrl(String headImageUrl) {
+		this.headImageUrl = headImageUrl;
 	}
+
+
+
+
+
+
+	public String getPaperImageUri() {
+		return paperImageUri;
+	}
+
+
+
+
+
+
+	public void setPaperImageUri(String paperImageUri) {
+		this.paperImageUri = paperImageUri;
+	}
+
+
+
+
 
 
 	public String getUsername() {
@@ -115,89 +181,17 @@ public class TdUser {
 	}
 
 
+
+
+
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
 
 
-	public String getNickname() {
-		return nickname;
-	}
 
 
-	public void setNickname(String nickname) {
-		this.nickname = nickname;
-	}
-
-
-	public String getPassword() {
-		return password;
-	}
-
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-
-	public String getRealName() {
-		return realName;
-	}
-
-
-	public void setRealName(String realName) {
-		this.realName = realName;
-	}
-
-
-	public Date getRegisterTime() {
-		return registerTime;
-	}
-
-
-	public void setRegisterTime(Date registerTime) {
-		this.registerTime = registerTime;
-	}
-
-
-	public Date getLastLoginTime() {
-		return lastLoginTime;
-	}
-
-
-	public void setLastLoginTime(Date lastLoginTime) {
-		this.lastLoginTime = lastLoginTime;
-	}
-
-
-	public String getMobile() {
-		return mobile;
-	}
-
-
-	public void setMobile(String mobile) {
-		this.mobile = mobile;
-	}
-
-
-	public String getEmail() {
-		return email;
-	}
-
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-
-	public Long getSortId() {
-		return sortId;
-	}
-
-
-	public void setSortId(Long sortId) {
-		this.sortId = sortId;
-	}
 
 
 	public Long getStatusId() {
@@ -205,19 +199,71 @@ public class TdUser {
 	}
 
 
+
+
+
+
 	public void setStatusId(Long statusId) {
 		this.statusId = statusId;
 	}
 
 
-	public Long getRoleId() {
-		return roleId;
+
+
+
+
+	public String getNickname() {
+		return nickname;
 	}
 
 
-	public void setRoleId(Long roleId) {
-		this.roleId = roleId;
+
+
+
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
 	}
+
+
+
+
+
+
+	public String getPassword() {
+		return password;
+	}
+
+
+
+
+
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+
+
+
+
+
+	public String getRealName() {
+		return realName;
+	}
+
+
+
+
+
+
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
+
+
+
+
 
 
 	public String getEnterName() {
@@ -225,9 +271,17 @@ public class TdUser {
 	}
 
 
+
+
+
+
 	public void setEnterName(String enterName) {
 		this.enterName = enterName;
 	}
+
+
+
+
 
 
 	public String getEnterType() {
@@ -235,9 +289,17 @@ public class TdUser {
 	}
 
 
+
+
+
+
 	public void setEnterType(String enterType) {
 		this.enterType = enterType;
 	}
+
+
+
+
 
 
 	public Long getEnterTypeId() {
@@ -245,9 +307,233 @@ public class TdUser {
 	}
 
 
+
+
+
+
 	public void setEnterTypeId(Long enterTypeId) {
 		this.enterTypeId = enterTypeId;
 	}
+
+
+
+
+
+
+	public Long getRoleId() {
+		return roleId;
+	}
+
+
+
+
+
+
+	public void setRoleId(Long roleId) {
+		this.roleId = roleId;
+	}
+
+
+
+
+
+
+	public Date getRegisterTime() {
+		return registerTime;
+	}
+
+
+
+
+
+
+	public void setRegisterTime(Date registerTime) {
+		this.registerTime = registerTime;
+	}
+
+
+
+
+
+
+	public Date getLastLoginTime() {
+		return lastLoginTime;
+	}
+
+
+
+
+
+
+	public void setLastLoginTime(Date lastLoginTime) {
+		this.lastLoginTime = lastLoginTime;
+	}
+
+
+
+
+
+
+	public String getMobile() {
+		return mobile;
+	}
+
+
+
+
+
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+
+
+
+
+
+	public String getEmail() {
+		return email;
+	}
+
+
+
+
+
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+
+
+
+
+
+	public Long getSortId() {
+		return sortId;
+	}
+
+
+
+
+
+
+	public void setSortId(Long sortId) {
+		this.sortId = sortId;
+	}
+
+
+
+
+
+
+	public Double getTotalProfit() {
+		return totalProfit;
+	}
+
+
+
+
+
+
+	public void setTotalProfit(Double totalProfit) {
+		this.totalProfit = totalProfit;
+	}
+
+
+
+
+
+
+	public Double getTotalGross() {
+		return totalGross;
+	}
+
+
+
+
+
+
+	public void setTotalGross(Double totalGross) {
+		this.totalGross = totalGross;
+	}
+
+
+
+
+
+
+	public Double getTotalDeduction() {
+		return totalDeduction;
+	}
+
+
+
+
+
+
+	public void setTotalDeduction(Double totalDeduction) {
+		this.totalDeduction = totalDeduction;
+	}
+
+
+
+
+
+
+	public Double getTaxBearing() {
+		return taxBearing;
+	}
+
+
+
+
+
+
+	public void setTaxBearing(Double taxBearing) {
+		this.taxBearing = taxBearing;
+	}
+
+
+
+
+
+
+	public Double getTotalIncomeTax() {
+		return totalIncomeTax;
+	}
+
+
+
+
+
+
+	public void setTotalIncomeTax(Double totalIncomeTax) {
+		this.totalIncomeTax = totalIncomeTax;
+	}
+
+
+
+
+
+
+	public String getNumber() {
+		return number;
+	}
+
+
+
+
+
+
+	public void setNumber(String number) {
+		this.number = number;
+	}
+
+
+
+
 
 
 	@Override

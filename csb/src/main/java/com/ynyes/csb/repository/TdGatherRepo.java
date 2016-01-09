@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -21,5 +22,7 @@ public interface TdGatherRepo extends
 		JpaSpecificationExecutor<TdGather> 
 { 
     Page<TdGather> findByTitleContainingOrderBySortIdAsc(String keywords, Pageable page);
+    
+    List<TdGather> findByUsername(String username, Sort sort);
 
 }

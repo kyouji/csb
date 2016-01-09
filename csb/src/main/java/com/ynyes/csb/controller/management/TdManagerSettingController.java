@@ -10,11 +10,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.ynyes.csb.entity.TdSetting;
+import com.ynyes.csb.service.TdApplyTypeService;
+import com.ynyes.csb.service.TdAreaService;
 import com.ynyes.csb.service.TdBillTypeService;
 import com.ynyes.csb.service.TdEnterTypeService;
 import com.ynyes.csb.service.TdManagerLogService;
 import com.ynyes.csb.service.TdSettingService;
 import com.ynyes.csb.util.SiteMagConstant;
+import com.ynyes.csb.entity.TdApplyType;
+import com.ynyes.csb.entity.TdArea;
 import com.ynyes.csb.entity.TdBillType;
 import com.ynyes.csb.entity.TdEnterType;
 
@@ -39,6 +43,12 @@ public class TdManagerSettingController {
     
     @Autowired
     TdBillTypeService tdBillTypeService;
+    
+    @Autowired
+    TdAreaService tdAreaService;
+    
+    @Autowired
+    TdApplyTypeService tdApplyTypeService;
     
     @RequestMapping
     public String setting(Long status, ModelMap map,
@@ -78,7 +88,11 @@ public class TdManagerSettingController {
         return "redirect:/Verwalter/setting?status=1";
     }
     
-    /*--------------------系统类别模块  begin ------------------------*/ 
+    
+     /* 
+     ===========+++++++++++++===============
+    --------------------系统类别模块  begin -----------------------
+    ============+++++++++++++++===========*/
     /**
      * 列表
      * @author Zhangji
@@ -109,10 +123,13 @@ public class TdManagerSettingController {
                 switch (type)
                 {
                 	case "billType": tdManagerLogService.addLog("delete", "删除票据类型", req);
-                	break;
-                	
+                		break;
                 	case "enterType": tdManagerLogService.addLog("delete", "删除公司类型", req);
-                	break;
+                		break;
+                	case "area": tdManagerLogService.addLog("delete", "删除区域类型", req);
+                		break;
+                	case "applyType": tdManagerLogService.addLog("delete", "删除申请业务类型", req);
+                		break;
                 	default:tdManagerLogService.addLog("delete", "删除信息", req);
                 }
                 	
@@ -124,10 +141,13 @@ public class TdManagerSettingController {
                 switch (type)
                 {
                 	case "billType": tdManagerLogService.addLog("save", "修改票据类型", req);
-                	break;
-                	
+                		break;
                 	case "enterType": tdManagerLogService.addLog("save", "修改公司类型", req);
-                	break;
+                		break;
+                	case "area": tdManagerLogService.addLog("save", "修改区域类型", req);
+                		break;
+                	case "applyType": tdManagerLogService.addLog("save", "修改申请业务类型", req);
+            		break;
                 	default:tdManagerLogService.addLog("save", "修改信息", req);
                 }
             }
@@ -143,7 +163,13 @@ public class TdManagerSettingController {
 	    	return "/site_mag/billType_list";
 	    	
 	    	case "enterType": map.addAttribute("enterType_list", tdEnterTypeService.findAllOrderBySortIdAsc());
-	    	return "/site_mag/EnterType_list";
+	    	return "/site_mag/enterType_list";
+	    	
+	    	case "area": map.addAttribute("area_list", tdAreaService.findAllOrderBySortIdAsc());
+	    	return "/site_mag/area_list";
+	    	
+	    	case "applyType": map.addAttribute("applyType_list", tdApplyTypeService.findAllOrderBySortIdAsc());
+	    	return "/site_mag/applyType_list";
 	    	
 	    	default: map.addAttribute("billType_list", tdBillTypeService.findAllOrderBySortIdAsc());
         }
@@ -185,7 +211,19 @@ public class TdManagerSettingController {
 		        }
 		        return "/site_mag/enterType_edit";
 	    	
-	    	
+	    	case "area": 
+		        if (null != id)
+		        {
+		        	map.addAttribute("area", tdAreaService.findOne(id));
+		        }
+		        return "/site_mag/area_edit";
+		        
+	    	case "applyType": 
+		        if (null != id)
+		        {
+		        	map.addAttribute("applyType", tdApplyTypeService.findOne(id));
+		        }
+		        return "/site_mag/applyType_edit";
 	    	
 	    	default: 
 		        if (null != id)
@@ -200,7 +238,7 @@ public class TdManagerSettingController {
     
     //公司类型保存
     @RequestMapping(value="/enterType/save", method = RequestMethod.POST)
-    public String EnterTypeSave(TdEnterType tdEnterType,
+    public String enterTypeSave(TdEnterType tdEnterType,
                         String __VIEWSTATE,
                         ModelMap map,
                         HttpServletRequest req) {
@@ -214,11 +252,12 @@ public class TdManagerSettingController {
         
         tdEnterTypeService.save(tdEnterType);
         
-        tdManagerLogService.addLog("edit", "修改活动区域", req);
+        tdManagerLogService.addLog("edit", "修改公司类型", req);
         
         return "redirect:/Verwalter/setting/enterType/list";
     }
     
+    //票据类型保存
     @RequestMapping(value="/billType/save", method = RequestMethod.POST)
     public String billTypeSave(TdBillType tdBillType,
                         String __VIEWSTATE,
@@ -234,9 +273,51 @@ public class TdManagerSettingController {
         
         tdBillTypeService.save(tdBillType);
         
-        tdManagerLogService.addLog("edit", "修改票据类别", req);
+        tdManagerLogService.addLog("edit", "修改票据类型", req);
         
         return "redirect:/Verwalter/setting/billType/list";
+    }
+    
+    //区域类型保存
+    @RequestMapping(value="/area/save", method = RequestMethod.POST)
+    public String areaTypeSave(TdArea tdArea,
+                        String __VIEWSTATE,
+                        ModelMap map,
+                        HttpServletRequest req) {
+        String username = (String) req.getSession().getAttribute("manager");
+        if (null == username)
+        {
+            return "redirect:/Verwalter/login";
+        }
+        
+        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+        
+        tdAreaService.save(tdArea);
+        
+        tdManagerLogService.addLog("edit", "修改区域类型", req);
+        
+        return "redirect:/Verwalter/setting/area/list";
+    }
+    
+    //申请业务类型保存
+    @RequestMapping(value="/applyType/save", method = RequestMethod.POST)
+    public String applyTypeSave(TdApplyType tdApplyType,
+                        String __VIEWSTATE,
+                        ModelMap map,
+                        HttpServletRequest req) {
+        String username = (String) req.getSession().getAttribute("manager");
+        if (null == username)
+        {
+            return "redirect:/Verwalter/login";
+        }
+        
+        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+        
+        tdApplyTypeService.save(tdApplyType);
+        
+        tdManagerLogService.addLog("edit", "修改申请业务类型", req);
+        
+        return "redirect:/Verwalter/setting/applyType/list";
     }
     
     /**
@@ -264,7 +345,14 @@ public class TdManagerSettingController {
                 {
                	 tdEnterTypeService.delete(id);
                }
-               
+                else if (type.equals("area"))
+                {
+               	 tdAreaService.delete(id);
+               }
+                else if (type.equals("applyType"))
+                {
+               	 tdApplyTypeService.delete(id);
+               }
             }
         }
     }
@@ -315,6 +403,40 @@ public class TdManagerSettingController {
 	                {
 	                	e.setIsEnable(isEnables[i]);
 	                	tdEnterTypeService.save(e);
+	                }
+	            }
+            }
+            else if (type.equals("area"))
+            {
+	            TdArea e = tdAreaService.findOne(id);
+	            if (null != e)
+	            {
+	                if (sortIds.length > i)
+	                {
+	                    e.setSortId(sortIds[i]);
+	                    tdAreaService.save(e);
+	                }
+	                if(isEnables.length > i)
+	                {
+	                	e.setIsEnable(isEnables[i]);
+	                	tdAreaService.save(e);
+	                }
+	            }
+            }
+            else if (type.equals("applyType"))
+            {
+	            TdApplyType e = tdApplyTypeService.findOne(id);
+	            if (null != e)
+	            {
+	                if (sortIds.length > i)
+	                {
+	                    e.setSortId(sortIds[i]);
+	                    tdApplyTypeService.save(e);
+	                }
+	                if(isEnables.length > i)
+	                {
+	                	e.setIsEnable(isEnables[i]);
+	                	tdApplyTypeService.save(e);
 	                }
 	            }
             }

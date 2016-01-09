@@ -65,8 +65,8 @@
 			<section class="choice_regis">
 				<select id="changeRole" name="changeRole" onchange="javascript:regChangeRole();">
 					<option value="">请选择注册类型</option>
-					<option value="0">公司注册</option>
-					<option value="1">会计注册</option>
+					<option <#if changeRole?? && changeRole==0>selected="selected"</#if> value="0">公司注册</option>
+					<option <#if changeRole?? && changeRole==1>selected="selected"</#if> value="1">会计注册</option>
 				</select>
 			</section>	
 			<input type="hidden"  id="roleId" name="roleId"  value="1"> 		
@@ -75,47 +75,7 @@
 			<input class="input01" type="text" placeholder="请输入用户名" id="username" name="username"  value="${username!''}">
 			<input class="input01" type="password" placeholder="请输入密码" id="password" name="password"  value="">
 			<input class="input01" type="password" placeholder="请再次输入密码" id="password2" name="password2"  value="">
-			<span>上传会计证照</span>
-						<section class="poto">	
-				<ul class="poto_box">
-					<li>
-						<img src="/client/images/touxiang01.png"/>
-						<a></a>
-					</li>
-					<li>
-						<img src="/client/images/touxiang01.png"/>
-						<a></a>
-					</li>
-					<li>
-						<img src="/client/images/touxiang01.png"/>
-						<a></a>
-					</li>
-					<li>
-						<img src="/client/images/touxiang01.png"/>
-						<a></a>
-					</li>
-					<li>
-						<img src="/client/images/touxiang01.png"/>
-						<a></a>
-					</li>
-					<li>
-						<img src="/client/images/touxiang01.png"/>
-						<a></a>
-					</li>
-					<li>
-						<div id="choice_poto"></div>
-					</li>
-				</ul>
-				<ul class="affirm">
-					<li>确认删除？</li>
-					<li>返回</li>
-				</ul>
-				<ul class="add_poto">
-					<li>即拍即传</li>
-					<li>从相册中选取</li>
-					<li>返回</li>
-				</ul>
-			</section>
+			
 			<input type="button" onclick="javascript:regAccSubmit();"  value="同意协议并注册" style="margin-top: 20px; color:#ffffff; background: #00b8e1;">
 			<p class="teaty" onclick="teaty_show('.teaty_out')">财税宝1688用户服务协议</p>
 		</article>

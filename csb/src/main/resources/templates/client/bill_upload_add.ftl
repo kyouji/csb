@@ -30,12 +30,12 @@
 			<input type="hidden" id="id" name="id" value="<#if user??>${user.id?c!''}</#if>"></input>
 			<input id="file" style="display:none;" class="area_save_btn" name="Filedata"  type="file" value="" onchange="javascript:formSubmit();"/>
 			<header class="header_one">
-				<a href="javascript:history.back(-1);"></a>
+				<a href="/bill/upload"></a>
 				<div>上传图片</div>
 			</header>
 			<section class="poto" style="height:300px;">	
-				<ul class="poto_box" style="display:table;text-align:center;">
-						<#if bill??><img src="/images/${bill.imgUrl!''}" width=100%/></#if>
+				<ul class="poto_box" style="display:table;text-align:center;max-height:300px;">
+						<#if bill??><img src="/images/${bill.imgUrl!''}" width=100% height=100%/></#if>
 				</ul>
 				
 				<ul class="affirm">

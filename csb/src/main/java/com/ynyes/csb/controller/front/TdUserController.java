@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,10 +23,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.csb.entity.TdApply;
+import com.ynyes.csb.entity.TdApplyType;
+import com.ynyes.csb.entity.TdArea;
+import com.ynyes.csb.entity.TdBill;
 import com.ynyes.csb.entity.TdDemand;
+import com.ynyes.csb.entity.TdPhoto;
 import com.ynyes.csb.entity.TdUser;
+import com.ynyes.csb.service.TdApplyService;
+import com.ynyes.csb.service.TdApplyTypeService;
+import com.ynyes.csb.service.TdAreaService;
 import com.ynyes.csb.service.TdCommonService;
 import com.ynyes.csb.service.TdDemandService;
+import com.ynyes.csb.service.TdEnterTypeService;
+import com.ynyes.csb.service.TdPhotoService;
 import com.ynyes.csb.service.TdUserService;
 import com.ynyes.csb.util.ClientConstant;
 
@@ -45,8 +57,23 @@ public class TdUserController {
 
 	@Autowired
 	private TdCommonService tdCommonService;
+	
+	@Autowired
+	private TdEnterTypeService tdEnterTypeService;
+	
+	@Autowired
+	private TdAreaService tdAreaService;
+	
+	@Autowired
+	private TdApplyTypeService tdApplyTypeService;
+	
+	@Autowired
+	private TdApplyService tdApplyService;
+	
+	@Autowired
+	private TdPhotoService tdPhotoService;
 
-	@RequestMapping(value = "/user")
+	@RequestMapping(value = "/user/center")
 	public String user(HttpServletRequest req, ModelMap map) {
 		String username = (String) req.getSession().getAttribute("username");
 		if (null == username) {
@@ -65,39 +92,31 @@ public class TdUserController {
 		}
 
 		map.addAttribute("user", tdUser);
-		// map.addAttribute("order_page",
-		// tdOrderService.findByUsername(username,
-		// 0, ClientConstant.pageSize));
-		// map.addAttribute("collect_page", tdUserCollectService.findByUsername(
-		// username, 0, ClientConstant.pageSize));
-		// map.addAttribute("recent_page", tdUserRecentVisitService
-		// .findByUsernameOrderByVisitTimeDesc(username, 0,
-		// ClientConstant.pageSize));
-		// map.addAttribute("total_unpayed",
-		// tdOrderService.countByUsernameAndStatusId(username, 2));
-		// map.addAttribute("total_undelivered",
-		// tdOrderService.countByUsernameAndStatusId(username, 3));
-		// map.addAttribute("total_unreceived",
-		// tdOrderService.countByUsernameAndStatusId(username, 4));
-		// map.addAttribute("total_finished",
-		// tdOrderService.countByUsernameAndStatusId(username, 6));
-		if (4L == tdUser.getRoleId()) {
-			return "redirect:/activity/list";
-		} else if (3L == tdUser.getRoleId()) {
-			return "redirect:/expert/enterprise/list";
-		} else if (2L == tdUser.getRoleId()) {
-			return "redirect:/region/enterprise/list";
-		} else if (1L == tdUser.getRoleId()) {
-			if (null != tdUser.getStatusId()) {
-				return "redirect:/enterprise/check";
-			} else {
-				return "redirect:/enterprise/info";
-			}
+
+		return "/client/user_center";
+	}
+	
+	@RequestMapping(value = "/user/about")
+	public String userAbout(HttpServletRequest req, ModelMap map) {
+		
+		tdCommonService.setHeader(map, req);
+		String username = (String) req.getSession().getAttribute("username");
+		if (null == username) {
+			return "redirect:/login";
 		}
 
-		return "/client/user_index";
+		TdUser tdUser = tdUserService.findByUsername(username);
+
+		if (null == tdUser) {
+			return "/client/error_404";
+		}
+
+		map.addAttribute("user", tdUser);
+
+		return "/client/user_about";
 	}
 
+	
 
 	@RequestMapping(value = "/demand/add", method = RequestMethod.POST)
 	@ResponseBody
@@ -152,7 +171,7 @@ public class TdUserController {
 
 
 	@RequestMapping(value = "/user/info", method = RequestMethod.GET)
-	public String userInfo(HttpServletRequest req, ModelMap map) {
+	public String userInfo(Long hatu , HttpServletRequest req, ModelMap map) {
 		String username = (String) req.getSession().getAttribute("username");
 
 		if (null == username) {
@@ -160,34 +179,124 @@ public class TdUserController {
 		}
 
 		tdCommonService.setHeader(map, req);
+		
+		map.addAttribute("enterType_list", tdEnterTypeService.findByIsEnableTrueOrderBySortIdAsc());
 
 		TdUser user = tdUserService.findByUsernameAndIsEnabled(username);
 
 		map.addAttribute("user", user);
+		map.addAttribute("hatu", hatu);
+		
+		
+        //该客户待确认上传的图片列表
+        List<TdPhoto> photoList1 = tdPhotoService.findByStatusIdAndUserId(1L, user.getId());
+        List<TdPhoto> photoList2 = tdPhotoService.findByStatusIdAndUserId(2L, user.getId());
+       
+        map.addAttribute("photo_list1", photoList1);
+        map.addAttribute("photo_list2", photoList2);
 
 		return "/client/user_info";
 	}
 
 	@RequestMapping(value = "/user/info", method = RequestMethod.POST)
-	public String userInfo(HttpServletRequest req, String realName, String sex, String email, String mobile,
-			ModelMap map) {
-		String username = (String) req.getSession().getAttribute("username");
+	@ResponseBody
+	public Map<String , Object> userInfo(HttpServletRequest req,
+													String enterName,
+													Long enterTypeId,
+													String username,
+													String realName, 
+													String mobile, 
+													Long[] photoIds,
+													HttpServletRequest request) {
+		Map<String, Object> res = new HashMap<String, Object>();
+	    res.put("code", 1);
+		
+		String usernameSession = (String) req.getSession().getAttribute("username");
 
-		if (null == username) {
-			return "redirect:/login";
+		if (null == usernameSession) {
+			res.put("msg", "请先登录！");
+			res.put("login", 1);
+			return res;
 		}
 
-		TdUser user = tdUserService.findByUsernameAndIsEnabled(username);
-
-		if (null != email && null != mobile) {
-			user.setRealName(realName);
-			user.setEmail(email);
-			user.setMobile(mobile);
-			user = tdUserService.save(user);
+		TdUser user = tdUserService.findByUsernameAndIsEnabled(usernameSession);
+		
+		if (null == realName ||realName.equals(""))
+		{
+			res.put("msg", "联系人姓名不能为空！");
+			return res;
+		}
+		if (null == username ||username.equals(""))
+		{
+			res.put("msg", "用户名不能为空！");
+			return res;
+		}
+		if (null == mobile || mobile.equals(""))
+		{
+			res.put("msg", "联系电话不能为空！");
+			return res;
+		}
+		if(!isMobileNO(mobile))
+		{
+			res.put("msg", "电话号码格式不对！");
+			return res;
 		}
 
-		return "redirect:/user/info";
+		TdUser user1 = tdUserService.findByUsername(username);
+		if (null != user1 && user1.getId() != user.getId()) {
+			res.put("msg", "该用户名已被注册！");
+			return res;
+		}
+		TdUser user2 = tdUserService.findByMobile(mobile);
+		if (null != user2 && user1.getId() != user.getId()) {
+			res.put("msg", "该联系电话已被注册！");
+			return res;
+		}
+		if(null != user.getRoleId() && user.getRoleId() == 0 && (null == enterName ||enterName.equals("")))
+		{
+			res.put("msg", "公司名称不能为空！");
+			return res;
+		}
+		
+		if(user.getRoleId()==0)
+		{
+			user.setEnterName(enterName);
+			user.setEnterTypeId(enterTypeId);
+			user.setEnterType(tdEnterTypeService.findOne(enterTypeId).getTitle());
+		}
+
+		user.setUsername(username);
+		user.setRealName(realName);
+		user.setMobile(mobile);
+		user = tdUserService.save(user);
+		
+		request.getSession().setAttribute("username", user.getUsername());
+        
+		if(null != photoIds)
+		{
+	        for(Long id : photoIds)
+	        {
+	        	TdPhoto tdPhoto = tdPhotoService.findOne(id);
+	        	tdPhoto.setStatusId(2L); 
+	        	tdPhoto.setTime(new Date());
+	        	tdPhotoService.save(tdPhoto);
+	        }
+		}
+
+        
+        //确认页面中取消上传的要删除
+        List<TdPhoto> toDelete = tdPhotoService.findByStatusIdAndUserId(1L, user.getId());
+        tdPhotoService.delete(toDelete);
+  
+	    res.put("code", 0);
+	    return res;
 	}
+	
+	public boolean isMobileNO(String mobiles) {
+		Pattern p = Pattern.compile("^(0|86|17951|[0-9]{3})?([0-9]{8})|((13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8})$");
+		Matcher m = p.matcher(mobiles);
+		return m.matches();
+		}
 
 	@RequestMapping(value = "/user/password", method = RequestMethod.GET)
 	public String userPassword(HttpServletRequest req, ModelMap map) {
@@ -237,26 +346,142 @@ public class TdUserController {
 		
 		return "/client/login";
 	}
-
-	/**
-	 * @author mdj
-	 * @param rep
-	 * @param imgUrl
-	 *            头像图片地址
-	 * @return
-	 */
-	@RequestMapping(value = "/user/headImageUrl", method = RequestMethod.POST)
-	@ResponseBody
-	public String saveHeadPortrait(String imgUrl, HttpServletRequest rep) {
-		String username = (String) rep.getSession().getAttribute("username");
+	
+	//改变头像
+	@RequestMapping(value = "/user/head")
+	public String userHead(ModelMap map,  HttpServletRequest req) {
+		String username = (String) req.getSession().getAttribute("username");
 		if (null == username) {
 			return "redirect:/login";
 		}
 		TdUser user = tdUserService.findByUsernameAndIsEnabled(username);
-		user.setHeadImageUri(imgUrl);
-		tdUserService.save(user);
+		map.addAttribute("user", user);
+		
+		return "client/user_head";
+	}
+	
+	//提交表单页面【我要】
+	@RequestMapping(value = "/apply")
+	public String apply(ModelMap map,  HttpServletRequest req) {
+		tdCommonService.setHeader(map, req); 
+		String username = (String) req.getSession().getAttribute("username");
+		if (null == username) {
+			return "redirect:/login";
+		}
+		TdUser user = tdUserService.findByUsernameAndIsEnabled(username);
+		map.addAttribute("user", user);
+		
+		//业务类型
+		List<TdApplyType> applyTypeList = tdApplyTypeService.findByIsEnableTrueOrderBySortIdAsc();
+		map.addAttribute("applyType_list", applyTypeList);
+		
+		return "client/apply_index";
+	}
+	
+	//新办公司
+	@RequestMapping(value = "/apply/edit/{applyTypeId}")
+	public String applyMake(@PathVariable Long applyTypeId, ModelMap map,  HttpServletRequest req) {
+		tdCommonService.setHeader(map, req); 
+		String username = (String) req.getSession().getAttribute("username");
+		if (null == username) {
+			return "redirect:/login";
+		}
+		TdUser user = tdUserService.findByUsernameAndIsEnabled(username);
+		map.addAttribute("user", user);
+		
+		if (null != applyTypeId)
+		{
+			TdApplyType applyType = tdApplyTypeService.findOne(applyTypeId);
+			map.addAttribute("typeTitle", applyType.getTitle());
+			map.addAttribute("applyTypeId", applyTypeId);
+			if(null != applyType.getSpAcc()&&applyType.getSpAcc()==1)
+			{
+				map.addAttribute("spAcc", applyType.getSpAcc());
+				map.addAttribute("enterType_list", tdEnterTypeService.findByIsEnableTrueOrderBySortIdAsc());
+			}
+			
+			//【防止重复提交】检查当前类别是否有未审核的业务
+			List<TdApply> tdApplyList = tdApplyService.findByUserIdAndStatusIdAndApplyTypeId(user.getId(), 0L, applyTypeId);
+			if(null != tdApplyList && tdApplyList.size() > 0)
+			{
+				map.addAttribute("aru", 1);
+			}
+		}
+		
+		List<TdArea> areaList = tdAreaService.findByIsEnableTrueOrderBySortIdAsc();
+		map.addAttribute("area_list", areaList);
+		
 
-		return "client/user_index";
+		return "client/apply_edit";
+	}
+	
+	//提交表单
+	@RequestMapping(value = "/apply/submit", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> applySubmit(HttpServletRequest req, 
+												String realName, 
+												String mobile,
+												Long areaId,
+												String address,
+												String remark,
+												Long applyTypeId,
+												Long enterTypeId) {
+		Map<String, Object> res = new HashMap<String, Object>();
+		res.put("code", 1);
+
+		String username = (String) req.getSession().getAttribute("username");
+
+		if (null == username) {
+			res.put("msg", "请先登录！");
+			return res;
+		}
+
+		TdUser user = tdUserService.findByUsernameAndIsEnabled(username);
+
+		if(null == realName || realName.equals(""))
+		{
+			res.put("msg", "请输入联系人姓名！");
+			return res;
+		}
+		if(null == mobile || mobile.equals(""))
+		{
+			res.put("msg", "请输入联系人电话！");
+			return res;
+		}
+		if(null == areaId || areaId.equals(""))
+		{
+			res.put("msg", "请输入公司所处区域！");
+			return res;
+		}
+		
+		TdApply tdApply = new TdApply();
+		tdApply.setRealName(realName);
+		tdApply.setMobile(mobile);
+		tdApply.setAreaId(areaId);
+		tdApply.setStatusId(0L);
+		tdApply.setSortId(99L);
+		tdApply.setTime(new Date());
+		tdApply.setUserId(user.getId());
+		if(null != remark)
+		{
+			tdApply.setRemark(remark);
+		}
+		if(null != address)
+		{
+			tdApply.setAddress(address);
+		}
+		if(null != enterTypeId)
+		{
+			tdApply.setEnterTypeId(enterTypeId);
+		}
+		if(null != applyTypeId)
+		{
+			tdApply.setApplyTypeId(applyTypeId);
+		}
+		tdApplyService.save(tdApply);
+		
+		res.put("code", 0);
+		return res;
 	}
 
 

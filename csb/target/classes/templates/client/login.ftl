@@ -28,13 +28,18 @@
 		    } 
 		    $(function(){
 		    	$("#btn_login").click(function(){
-		    	    saveUserInfo();    	   
+		    	    saveUserInfo();    	
+		    	    autoLogin();
 		    	});	
 		    });   
 		    //自动登陆
+		    console.log( $.cookie("autoLogin"));
 		    if($.cookie("autoLogin") == "true"){
 		    	$("#autoLogin").attr("checked",true);
-		    	loginSubmit();
+		    	$("#btn_login").attr("value","登录中");
+		    	$("#btn_login").removeClass("login_bg");
+		    	$("#btn_login").addClass("auto_login_bg");
+		    	setTimeout("loginSubmit()",1200);
 		    }	
 		});
 		
@@ -43,28 +48,34 @@
 		    if (document.getElementById("savePassword").checked==true) { 
 		        var username = $("#username").val(); 
 		        var password = $("#password").val(); 
-		        $.cookie("savePassword", "true", { expires: 14 }); // 存储一个带7天期限的 cookie 
-		        $.cookie("username", username, { expires: 14 }); // 存储一个带7天期限的 cookie 
-		        $.cookie("password", password, { expires: 14 }); // 存储一个带7天期限的 cookie 
+		        $.cookie("savePassword", "true", { expires: 45 }); // 存储一个带45天期限的 cookie 
+		        $.cookie("username", username, { expires: 45 }); // 存储一个带45期限的 cookie 
+		        $.cookie("password", password, { expires: 45}); // 存储一个带45天期限的 cookie 
 		    } 
 		    else { 
 		        $.cookie("savePassword", "false", { expires: -1 }); 
 		        $.cookie("username", '', { expires: -1 }); 
 		        $.cookie("password", '', { expires: -1 }); 
 		    } 
-		}        
+		}     
+		
+		function autoLogin(){
+            if (document.getElementById("autoLogin").checked==true) { 
+                $.cookie("autoLogin", "true", { expires: 45 }); // 存储一个带45天期限的 cookie 
+            } 
+		    else { 
+		        $.cookie("autoLogin", "false", { expires: -1 }); 
+		    } 
+		}
 		
 		function auto(){
-			if($("#autoLogin").checked == true)
+			if($("#autoLogin").is(':checked'))
 			{
-				$("#savePassword").removeAttr("checked"); 
-				//$("#autoLogin").removeAttr("checked"); 
+				document.getElementById("savePassword").checked=true; 
 			}
 			else{
-				$("#savePassword").attr("checked", true); 
-				//$("#autoLogin").attr("checked", true); 
+			    document.getElementById("savePassword").checked=false; 
 			}
-			
 		}
 		</script>
 	</head>
@@ -93,7 +104,7 @@
 						<p id="alert_msg" style="color: #db4d11;text-align: center;line-height:30px;"></p>
 					</li>
 					<li class="li03">
-						<input type="button" id="btn_login" onclick="javascript:loginSubmit();" value="登录" />
+						<input type="button" class="login_bg" id="btn_login" onclick="javascript:loginSubmit();" value="登录" />
 						<span></span>
 					</li>
 					<li class="li04">

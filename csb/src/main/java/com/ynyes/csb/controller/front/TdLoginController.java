@@ -101,7 +101,6 @@ public class TdLoginController {
 			res.put("code", 0);
 
 			System.err.println(user);
-			Integer roleId = user.getRoleId().intValue();
 			request.getSession().setMaxInactiveInterval(60 * 60 * 2);
 
 			
@@ -300,7 +299,7 @@ public class TdLoginController {
 	@RequestMapping("/logout")
 	public String logOut(HttpServletRequest request) {
 		request.getSession().invalidate();
-		return "redirect:/";
+		return "redirect:/login";
 	}
 
 	@RequestMapping(value = "/verify", method = RequestMethod.GET)
