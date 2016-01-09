@@ -36,7 +36,7 @@
 			<ul class="clear_box02">
 				<li class="title">
 					<h3>
-						<#if gather.title??&&gather.length gt 0>
+						<#if gather.title??&&gather?length gt 0>
 							${gather.title}
 						<#elseif gather.time??>
 							${gather.time?string("MM")}月票据整理汇总如下

@@ -40,9 +40,12 @@
 			            }
 					}
 					else{
-						$.dialog.alert(data.msg)
+						alert(data.msg)
+						if(data.statusId != "")
+							{
+							  location.href='/Verwalter/bill/deal/${bill.id?c}?statusId='+statusId;
+							}
 						
-						setTimeout("location.href='/Verwalter/bill/list/${bill.statusId!''}'",2000);
 						
 					}
 			      }
@@ -69,7 +72,7 @@
   <div id="floatHead" class="content-tab">
     <div class="content-tab-ul-wrap">
       <ul>
-        <li><a href="javascript:;" onclick="tabs(this);" class="selected">信息</a></li>
+        <li><a href="javascript:;" onclick="tabs(this);" class="selected">用户信息</a></li>
       </ul>
     </div>
   </div>
@@ -117,11 +120,11 @@
     <dd>
         <div class="rule-single-select">
             <select name="statusId" id="statusId" datatype="*" sucmsg=" " nullmsg="请选择！" class="Validform_error" style="display: none;">
-                <option value="2" >上传完成</option>
-				<option value="3" <#if bill.statusId?? && bill.statusId==2>selected="selected"</#if>>票据整理完成</option>
-				<option value="4" <#if bill.statusId?? && bill.statusId==3>selected="selected"</#if>>财务处理完成</option>
+                <option value="2" >初始化状态</option>
+				<option value="3" <#if bill.statusId?? && bill.statusId==2>selected="selected"</#if>>票据整理</option>
+				<option value="4" <#if bill.statusId?? && bill.statusId==3>selected="selected"</#if>>财务处理</option>
 				<option value="5" <#if bill.statusId?? && bill.statusId==4>selected="selected"</#if>>税费扣缴</option>
-				<option value="6" <#if bill.statusId?? && bill.statusId==5>selected="selected"</#if>>财务状况表完成</option>
+				<option value="6" <#if bill.statusId?? && bill.statusId==5>selected="selected"</#if>>财务状况表</option>
             </select>
         </div>
     </dd>

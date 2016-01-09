@@ -99,11 +99,11 @@ public class TdGatherService {
      * 根据username查找所有【票据整理】信息
      * @return
      */
-    public List<TdGather> findByUsername(String username)
+    public List<TdGather> findByUserId(Long userId)
     {
         Sort sort = new Sort(Direction.ASC, "sortId").and(new Sort(Direction.DESC, "time"));
         
-        return (List<TdGather>) repository.findByUsername(username, sort);
+        return (List<TdGather>) repository.findByUserId(userId, sort);
     }
     
     

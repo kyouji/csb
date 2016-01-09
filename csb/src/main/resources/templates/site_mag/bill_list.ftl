@@ -116,7 +116,7 @@ var theForm = document.forms['form1'];
                 <#if ("user_" + item.id)?eval??>
         		<#assign user = ("user_" + item.id)?eval>
                 <td align="center">
-                		${user.username!''}
+                		<a href="/Verwalter/bill/edit?id=${item.id}&roleId=${roleId!""}">${user.username!''}</a>
                 </td>
                 <td align="center">${user.realName!""}</td>
                 <td align="center">${user.mobile!""}</td>

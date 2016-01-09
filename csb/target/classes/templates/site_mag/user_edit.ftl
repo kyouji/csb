@@ -273,7 +273,7 @@ $(function () {
 
 <!--导航栏-->
 <div class="location" style="position: static; top: 0px;">
-  <a href="/Verwalter/user/list?roleId=${roleId!""}"><i></i><span>返回列表页</span></a>
+  <a href="/Verwalter/user/list/${roleId!""}"><i></i><span>返回列表页</span></a>
   <a href="/Verwalter/center" class="home"><i></i><span>首页</span></a>
   <i class="arrow"></i>
   <span>用户管理</span>
@@ -308,8 +308,8 @@ $(function () {
 
 <div>
 <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="${__VIEWSTATE!""}" >
-<input type="hidden" name="userId" value="<#if user??>${user.id!""}</#if>" >
-<input type="hidden" name="roleId" value="<#if user??>${user.roleId!""}<#else>1</#if>" >
+<input type="hidden" name="userId" value="<#if user??>${user.id?c!""}</#if>" >
+<input type="hidden" name="roleId" value="<#if user??>${user.roleId!""}<#else>0</#if>" >
 </div>
  <dl>
     <dt>用户角色</dt>
@@ -352,14 +352,6 @@ $(function () {
     <dd><input name="password" type="text" value="<#if user??>${user.password!''}</#if>" class="input normal" datatype="*6-20" nullmsg="请设置密码" errormsg="密码范围在6-20位之间" sucmsg=" " value=""> <span class="Validform_checktip">*登录的密码，至少6位</span></dd>
   </dl>
   <dl>
-    <dt>确认密码</dt>
-    <dd><input name="password1" type="text" value="<#if user??>${user.password!''}</#if>" class="input normal" datatype="*" recheck="password" nullmsg="请再输入一次密码" errormsg="两次输入的密码不一致" sucmsg=" " value=""> <span class="Validform_checktip">*再次输入密码</span></dd>
-  </dl>
-  <dl>
-    <dt>手机号码</dt>
-    <dd><input name="mobile" type="text" value="<#if user??>${user.mobile!""}</#if>" class="input normal" datatype="m|/^(0|86|17951|[0-9]{3})?([0-9]{8})|((13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8})$/" ajaxurl="/Verwalter/user/check/mobile<#if user??>?id=${user.id?c!''}</#if>" sucmsg=" " ><span class="Validform_checktip">*取回密码时用到</span></dd>
-  </dl>
-  <dl>
     <dt>联系人姓名</dt>
     <dd><input name="realName" type="text" value="<#if user??>${user.realName!""}</#if>" class="input normal"  sucmsg=" " ><span class="Validform_checktip">*联系人姓名</span></dd>
   </dl>
@@ -367,13 +359,13 @@ $(function () {
     <dt>联系人电话</dt>
     <dd><input name="mobile" type="text" value="<#if user??>${user.mobile!""}</#if>" class="input normal"  sucmsg=" " ><span class="Validform_checktip">*联系人电话</span></dd>
   </dl>
-  <dl class="enter" <#if !user?? || user?? && user.roleId?? && user.roleId == 0 >style= "display:none;"</#if>>
+  <dl class="enter" <#if !user?? || user?? && user.roleId?? && user.roleId == 1 >style= "display:none;"</#if>>
     <dt>公司名称</dt>
     <dd><input name="enterName" type="text" value="<#if user??>${user.enterName!""}</#if>" class="input normal"  sucmsg=" " ><span class="Validform_checktip">*公司名称</span></dd>
   </dl> 
-  <dl class="enter" <#if !user?? || user?? && user.roleId?? && user.roleId == 0 >style= "display:none;"</#if>>
+  <dl class="enter" <#if !user?? || user?? && user.roleId?? && user.roleId == 1 >style= "display:none;"</#if>>
     <dt>公司类型</dt>
-    <dd><input name="enterName" type="text" value="<#if user??>${user.enterName!""}</#if>" class="input normal"  sucmsg=" " ><span class="Validform_checktip">*公司名称</span></dd>
+    <dd><input name="enterType" type="text" value="<#if user??>${user.enterName!""}</#if>" class="input normal"  sucmsg=" " ><span class="Validform_checktip">*公司名称</span></dd>
   </dl>   
 
 	

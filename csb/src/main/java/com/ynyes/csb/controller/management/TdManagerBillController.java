@@ -306,17 +306,155 @@ public class TdManagerBillController {
 	        TdBill bill = tdBillService.findOne(id);
 	        if(null != statusId)
 	        {
-	        	bill.setStatusId(statusId);
+//	        	bill.setStatusId(statusId);
 	        	bill.setRemark(remark);
 	        	bill.setFinishTime(new Date());
 	        	tdBillService.save(bill);
-	        	res.put("msg", "操作成功！");
+	        	res.put("statusId", statusId);
+	        	if(statusId == 2)
+	        	{
+	        		res.put("msg", "操作成功！票据已改为待处理状态");
+	        	}
+	        	else if(statusId == 3)
+	        	{
+	        		res.put("msg", "操作成功！请填写票据整理表单");
+	        	}
+	        	else if(statusId == 4)
+	        	{
+	        		res.put("msg", "操作成功！请进行相关用户的财务处理");
+	        	}
+	        	else if(statusId == 5)
+	        	{
+	        		res.put("msg", "操作成功！请进行相关用户的税费扣缴");
+	        	}
+	        	else if(statusId == 6)
+	        	{
+	        		res.put("msg", "操作成功！请上传用户的财务状况表");
+	        	}
 	        }
 
 			res.put("code", 0);
 
 			return res;
 	    }
+	 
+	//处理票据，人工处理
+		 @RequestMapping(value="/deal/{id}")
+		    public String billDeal(@PathVariable Long id,
+		    					Long statusId,
+		                        String __VIEWSTATE,
+		                        ModelMap map,
+		                        HttpServletRequest req){
+		        String username = (String) req.getSession().getAttribute("manager");
+		        if (null == username)
+		        {
+		            return "redirect:/Verwalter/login";
+		        }
+		        
+		        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+		      
+		        if (null != id)
+		        {
+		        	TdBill bill = tdBillService.findOne(id);
+		            map.addAttribute("bill",bill);
+		            
+		            map.addAttribute("user", tdUserService.findOne(bill.getUserId()));
+		        }
+		        if(null != statusId)
+		        {
+		        	map.addAttribute("statusId", statusId);
+		        	if(statusId == 3)
+		        	{
+		        		return "/site_mag/bill_deal";
+		        	}
+		        	else 
+		        	{
+		        		return "redirect:/Verwalter/bill/list/"+statusId;
+		        	}
+		        }
+		        return "/site_mag/center";
+		    }
+	 
+	 
+	 
+	//票据整理 用户列表 2016年1月10日 02:04:27
+	    @RequestMapping(value="/user/list")
+	    public String billUserList(Integer page,
+	                          Integer size,
+	                          String keywords,
+	                          String __EVENTTARGET,
+	                          String __EVENTARGUMENT,
+	                          String __VIEWSTATE,
+	                          Long[] listId,
+	                          Integer[] listChkId,
+	                          ModelMap map,
+	                          HttpServletRequest req){
+	        String username = (String) req.getSession().getAttribute("manager");
+	        if (null == username) {
+	            return "redirect:/Verwalter/login";
+	        }
+	        if (null != __EVENTTARGET)
+	        {
+	            if (__EVENTTARGET.equalsIgnoreCase("btnPage"))
+	            {
+	                if (null != __EVENTARGUMENT)
+	                {
+	                    page = Integer.parseInt(__EVENTARGUMENT);
+	                } 
+	            }
+	        }
+	        
+	        if (null == page || page < 0)
+	        {
+	            page = 0;
+	        }
+	        
+	        if (null == size || size <= 0)
+	        {
+	            size = SiteMagConstant.pageSize;;
+	        }
+	        
+	        if (null != keywords)
+	        {
+	            keywords = keywords.trim();
+	        }
+	        
+	        map.addAttribute("page", page);
+	        map.addAttribute("size", size);
+	        map.addAttribute("keywords", keywords);
+	        map.addAttribute("__EVENTTARGET", __EVENTTARGET);
+	        map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
+	        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+
+	        Page<TdUser> userPage = null;
+
+	        if (null == keywords || "".equalsIgnoreCase(keywords))
+	        {
+	            userPage = tdUserService.findAllOrderBySortIdAsc(page, size);
+	        }
+	        else
+	        {
+	            userPage = tdUserService.searchAndOrderByIdDesc(keywords, page, size);
+	        }
+	        
+	        if(null != userPage)
+	        {
+	        	for(TdUser item : userPage)
+	        	{
+	        		List<TdBill> billList = tdBillService.findByUserId(item.getId());
+	        		if(null != billList)
+	        		{
+	        			map.addAttribute("billAmount_"+item.getId(), billList.size());
+	        		}
+	        	}
+	        }
+
+	        
+	        map.addAttribute("user_page", userPage);
+	        
+	        return "/site_mag/user_list_bill";
+	    }
+	 
 	 
 	 private void btnDelete( Long[] ids, Integer[] chkIds)
 	    {

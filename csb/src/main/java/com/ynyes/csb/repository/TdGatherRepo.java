@@ -23,6 +23,6 @@ public interface TdGatherRepo extends
 { 
     Page<TdGather> findByTitleContainingOrderBySortIdAsc(String keywords, Pageable page);
     
-    List<TdGather> findByUsername(String username, Sort sort);
+    List<TdGather> findByUserId(Long userId, Sort sort);
 
 }

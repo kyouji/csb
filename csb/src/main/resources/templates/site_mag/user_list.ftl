@@ -87,8 +87,8 @@ var theForm = document.forms['form1'];
     <th width="6%">头像</th>
     <th align="left" width="12%">用户名</th>
     <#if roleId?? && roleId==0>
-	    <th  align="center" width="20%">公司名称</th>
-	    <th align="left" width="4%">公司类型</th>
+	    <th align="center" width="20%">公司名称</th>
+	    <th align="center" width="4%">公司类型</th>
     </#if>
     <th width="8%">联系人姓名</th>
     <th width="8%">联系人电话</th>
@@ -105,7 +105,7 @@ var theForm = document.forms['form1'];
                     </span>
                     <input type="hidden" name="listId" id="listId" value="${user.id}">
                 </td>
-                <td align="center">${user.nickname!''}</td>
+                <td align="center">${user.number!''}</td>
                 <#--<td width="64">
                   <a href="/Verwalter/user/edit?id=${user.id}">
                     <img width="64" height="64" src="${user.headImageUri!"/mag/style/user_avatar.png"}">
@@ -130,9 +130,7 @@ var theForm = document.forms['form1'];
                 </td>
                 <#if roleId?? && roleId==0>
                 <td align="center">${user.enterName!"&nbsp;"}</td>
-                <td>
-                ${user.enterType!''}
-                </td>
+                <td align="center">${user.enterType!''}</td>
                 </#if>
                 <td align="center">${user.realName!""}</td>
                 <td align="center">${user.mobile!""}</td>

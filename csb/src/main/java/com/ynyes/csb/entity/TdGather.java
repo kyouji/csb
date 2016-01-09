@@ -26,9 +26,9 @@ public class TdGather {
     @Column
     private Long  sortId;
     
-    //用户名
+    //用户id
     @Column
-    private String username;
+    private Long userId;
     
     // 名称
     @Column
@@ -40,7 +40,7 @@ public class TdGather {
     
     //填写时间（月份）
     @Column
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM")
     private Date time;
     
     /*---------------------------------------------------------
@@ -209,12 +209,12 @@ public class TdGather {
 		this.sortId = sortId;
 	}
 
-	public String getUsername() {
-		return username;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 	public String getTitle() {

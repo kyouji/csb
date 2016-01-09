@@ -59,7 +59,7 @@ public class TdGatherController {
             map.addAttribute("user", user);
         }
         
-        List<TdGather> gatherList = tdGatherService.findByUsername(username);
+        List<TdGather> gatherList = tdGatherService.findByUserId(user.getId());
         
         if(gatherList.size() > 0)
         {

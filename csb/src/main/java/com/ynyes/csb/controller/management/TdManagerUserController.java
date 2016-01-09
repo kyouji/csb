@@ -250,8 +250,9 @@ public class TdManagerUserController {
         	TdUser user = tdUserService.findOne(id);
             map.addAttribute("user",user);
             map.addAttribute("id",id);
-            
+            map.addAttribute("roleId",user.getRoleId());
         }
+        map.addAttribute("roleId",0);
         return "/site_mag/user_edit";
     }
     
@@ -319,7 +320,6 @@ public class TdManagerUserController {
     	return "redirect:/user/list";
     }
     
-
 
     //如果type是apply的话，就是用户的申请表单列表
     @RequestMapping(value="/{type}/list")
