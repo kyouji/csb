@@ -293,9 +293,8 @@ $(function () {
     <div class="content-tab-ul-wrap">
       <ul>
           <li><a href="javascript:;" onclick="tabs(this);" class="selected menu">编辑资料</a></li>
-        <#--
-        <li><a href="javascript:;" onclick="tabs(this);">账户信息</a></li>
-        -->
+          <li><a href="javascript:;" onclick="tabs(this);">账户信息</a></li>
+        
       </ul>
     </div>
   </div>
@@ -304,7 +303,7 @@ $(function () {
 
 <!--安全设置-->
 <form name="form_user" method="post" action="/Verwalter/user/save" id="form_user">
-<div class="tab-content" <#if enterprise??> style="display:none;"</#if>>  
+<div class="tab-content"  style="display:block;">  
 
 <div>
 <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="${__VIEWSTATE!""}" >
@@ -313,6 +312,7 @@ $(function () {
 </div>
  <dl>
     <dt>用户角色</dt>
+    <dd>
         <div class="rule-single-select">
             <select name="roleId" id="roleId" datatype="*" sucmsg=" " nullmsg="请选择！" class="Validform_error" style="display: none;">
                 <option value="" >请选择角色</option>
@@ -359,6 +359,21 @@ $(function () {
     <dt>联系人电话</dt>
     <dd><input name="mobile" type="text" value="<#if user??>${user.mobile!""}</#if>" class="input normal"  sucmsg=" " ><span class="Validform_checktip">*联系人电话</span></dd>
   </dl>
+ <dl class="enter" <#if !user?? || user?? && user.roleId?? && user.roleId == 1 >style= "display:none;"</#if>>
+    <dt>公司类型</dt>
+    <dd>
+        <div class="rule-single-select">
+            <select name="enterTypeId" id="enterTypeId" datatype="*" sucmsg=" " nullmsg="请选择！" class="Validform_error" style="display: none;">
+                <option value="" >请选择类型</option>
+                <#if enterType_list??>
+                	<#list enterType_list as item>
+						<option value="${item.id?c}" <#if user??&&user.enterTypeId?? && user.enterTypeId==item.id>selected="selected"</#if>>${item.title!''}</option>
+					</#list>
+				</#if>		
+            </select>
+        </div>
+    </dd>
+ </dl>       
   <dl class="enter" <#if !user?? || user?? && user.roleId?? && user.roleId == 1 >style= "display:none;"</#if>>
     <dt>公司名称</dt>
     <dd><input name="enterName" type="text" value="<#if user??>${user.enterName!""}</#if>" class="input normal"  sucmsg=" " ><span class="Validform_checktip">*公司名称</span></dd>
@@ -367,8 +382,21 @@ $(function () {
     <dt>公司类型</dt>
     <dd><input name="enterType" type="text" value="<#if user??>${user.enterName!""}</#if>" class="input normal"  sucmsg=" " ><span class="Validform_checktip">*公司名称</span></dd>
   </dl>   
+</div>
+<div class="tab-content"  style="display:block;">  
+    <dl>
+    <dt>证件</dt>
+    <dd>
+        <img src="<#if photo??&&photo.imgUrl??&&photo.imgUrl != "">/images/${photo.imgUrl!""} <#else>/client/images/foote22.png</#if>"  />
+    </dd>
+  </dl>
+  <dl>
+    <dt>证件下载</dt>
+    <dd><a href="/download/data?name=${photo.imgUrl!''}">${photo.imgUrl!''}</a></dd>
+  </dl>
 
-	
+
+</div>
 
 <!--/安全设置-->
 

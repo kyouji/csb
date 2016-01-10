@@ -57,7 +57,7 @@ public class TdFinanceController {
             map.addAttribute("user", user);
         }
         
-        List<TdFinance> FinanceList = tdFinanceService.findByUsername(username);
+        List<TdFinance> FinanceList = tdFinanceService.findByUserId(user.getId());
         
         if(FinanceList.size() > 0)
         {

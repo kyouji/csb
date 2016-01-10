@@ -1,5 +1,6 @@
 package com.ynyes.csb.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -21,7 +22,8 @@ public interface TdFinanceRepo extends
 		PagingAndSortingRepository<TdFinance, Long>,
 		JpaSpecificationExecutor<TdFinance> 
 { 
-     
-    List<TdFinance> findByUsername(String username, Sort sort); 
-
+	 TdFinance findByUserIdAndTime(Long userId, Date time);
+	 
+    List<TdFinance> findByUserId(Long userId, Sort sort);
+    List<TdFinance> findByTime(Date time);
 }

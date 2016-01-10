@@ -1,5 +1,6 @@
 package com.ynyes.csb.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,6 +105,18 @@ public class TdGatherService {
         Sort sort = new Sort(Direction.ASC, "sortId").and(new Sort(Direction.DESC, "time"));
         
         return (List<TdGather>) repository.findByUserId(userId, sort);
+    }
+    
+    //根据时间查找？
+    public List<TdGather> findByTime(Date time)
+    {
+        return repository.findByTime(time);
+    }
+    
+    public TdGather findByUserIdAndTime(Long userId, Date time)
+    {
+        
+        return repository.findByUserIdAndTime(userId, time);
     }
     
     

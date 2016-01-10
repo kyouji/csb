@@ -1,14 +1,18 @@
 package com.ynyes.csb.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
 
 /**
  * 财务状况
@@ -23,23 +27,20 @@ public class TdFinance {
     
     // 用户名
     @Column
-    private String  username;
+    private Long  userId;
     
     // 排序
     @Column
     private Long  sortId;
     
-    //账面存货Id
-    @Column
-    private Long stockId;
-    
-    // 状态
-    @Column
-    private Boolean isEnable;
+	//账面库存
+	@OneToMany
+	@JoinColumn(name = "masterId")
+	private List<TdStock> stockList;
     
     //时间（月份）
     @Column
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM")
     private Date time;
     
     //附件
@@ -47,6 +48,10 @@ public class TdFinance {
     private String fileUrl;
     
     // 补充说明
+    @Column
+    private String content;
+    
+    // 备注
     @Column
     private String remark;
     
@@ -92,7 +97,7 @@ public class TdFinance {
     
     //税负
     @Column
-    private Double taxBearing;
+    private String taxBear;
     
     //本月待抵扣税金
     @Column
@@ -108,8 +113,8 @@ public class TdFinance {
     
     //未收抵扣联，最早日期
     @Column
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private Double todoEarlyDate;
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    private Date todoEarlyDate;
     
     //已收抵扣联，数量
     @Column
@@ -117,8 +122,8 @@ public class TdFinance {
     
     //已收抵扣联，最早日期
     @Column
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private Double doneEarlyDate;
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    private Date doneEarlyDate;
     
     
     
@@ -133,8 +138,6 @@ public class TdFinance {
     //提示小消息
     @Column
     private String tip;
-    
-
 
 	public Long getId() {
 		return id;
@@ -144,12 +147,12 @@ public class TdFinance {
 		this.id = id;
 	}
 
-	public String getUsername() {
-		return username;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 	public Long getSortId() {
@@ -158,6 +161,46 @@ public class TdFinance {
 
 	public void setSortId(Long sortId) {
 		this.sortId = sortId;
+	}
+
+	public List<TdStock> getStockList() {
+		return stockList;
+	}
+
+	public void setStockList(List<TdStock> stockList) {
+		this.stockList = stockList;
+	}
+
+	public Date getTime() {
+		return time;
+	}
+
+	public void setTime(Date time) {
+		this.time = time;
+	}
+
+	public String getFileUrl() {
+		return fileUrl;
+	}
+
+	public void setFileUrl(String fileUrl) {
+		this.fileUrl = fileUrl;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 
 	public Double getNoTax() {
@@ -200,6 +243,22 @@ public class TdFinance {
 		this.totalGross = totalGross;
 	}
 
+	public Double getTotalDeduction() {
+		return totalDeduction;
+	}
+
+	public void setTotalDeduction(Double totalDeduction) {
+		this.totalDeduction = totalDeduction;
+	}
+
+	public Double getTotalIncomeTax() {
+		return totalIncomeTax;
+	}
+
+	public void setTotalIncomeTax(Double totalIncomeTax) {
+		this.totalIncomeTax = totalIncomeTax;
+	}
+
 	public Double getTaxRetention() {
 		return taxRetention;
 	}
@@ -216,20 +275,12 @@ public class TdFinance {
 		this.valorem = valorem;
 	}
 
-	public Double getTotalDeduction() {
-		return totalDeduction;
+	public String getTaxBear() {
+		return taxBear;
 	}
 
-	public void setTotalDeduction(Double totalDeduction) {
-		this.totalDeduction = totalDeduction;
-	}
-
-	public Double getTotalIncomeTax() {
-		return totalIncomeTax;
-	}
-
-	public void setTotalIncomeTax(Double totalIncomeTax) {
-		this.totalIncomeTax = totalIncomeTax;
+	public void setTaxBear(String taxBear) {
+		this.taxBear = taxBear;
 	}
 
 	public Double getTodo() {
@@ -248,22 +299,6 @@ public class TdFinance {
 		this.todoValorem = todoValorem;
 	}
 
-	public Double getDoneAmount() {
-		return doneAmount;
-	}
-
-	public void setDoneAmount(Double doneAmount) {
-		this.doneAmount = doneAmount;
-	}
-
-	public Double getDoneEarlyDate() {
-		return doneEarlyDate;
-	}
-
-	public void setDoneEarlyDate(Double doneEarlyDate) {
-		this.doneEarlyDate = doneEarlyDate;
-	}
-
 	public Double getTodoAmount() {
 		return todoAmount;
 	}
@@ -272,44 +307,28 @@ public class TdFinance {
 		this.todoAmount = todoAmount;
 	}
 
-	public Double getTodoEarlyDate() {
+	public Date getTodoEarlyDate() {
 		return todoEarlyDate;
 	}
 
-	public void setTodoEarlyDate(Double todoEarlyDate) {
+	public void setTodoEarlyDate(Date todoEarlyDate) {
 		this.todoEarlyDate = todoEarlyDate;
 	}
 
-	public Long getStockId() {
-		return stockId;
+	public Double getDoneAmount() {
+		return doneAmount;
 	}
 
-	public void setStockId(Long stockId) {
-		this.stockId = stockId;
+	public void setDoneAmount(Double doneAmount) {
+		this.doneAmount = doneAmount;
 	}
 
-	public Boolean getIsEnable() {
-		return isEnable;
+	public Date getDoneEarlyDate() {
+		return doneEarlyDate;
 	}
 
-	public void setIsEnable(Boolean isEnable) {
-		this.isEnable = isEnable;
-	}
-
-	public Date getTime() {
-		return time;
-	}
-
-	public void setTime(Date time) {
-		this.time = time;
-	}
-
-	public String getRemark() {
-		return remark;
-	}
-
-	public void setRemark(String remark) {
-		this.remark = remark;
+	public void setDoneEarlyDate(Date doneEarlyDate) {
+		this.doneEarlyDate = doneEarlyDate;
 	}
 
 	public Double getMaxTicket() {
@@ -320,14 +339,6 @@ public class TdFinance {
 		this.maxTicket = maxTicket;
 	}
 
-	public Double getTaxBearing() {
-		return taxBearing;
-	}
-
-	public void setTaxBearing(Double taxBearing) {
-		this.taxBearing = taxBearing;
-	}
-
 	public String getTip() {
 		return tip;
 	}
@@ -336,14 +347,6 @@ public class TdFinance {
 		this.tip = tip;
 	}
 
-	public String getFileUrl() {
-		return fileUrl;
-	}
-
-	public void setFileUrl(String fileUrl) {
-		this.fileUrl = fileUrl;
-	}
-	
 	
 
 }

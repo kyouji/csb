@@ -129,6 +129,14 @@
         </div>
     </dd>
 </dl>
+<#if bill.finishtime??>
+  <dl>
+    <dt>上一次操作时间</dt>
+    <dd>
+        ${bill.finishtime?string('yyyy年MM月dd日 hh:mm:ss')}
+    </dd>
+  </dl>
+ </#if> 
    <dl>
        <dt>备注</dt>
        <dd>

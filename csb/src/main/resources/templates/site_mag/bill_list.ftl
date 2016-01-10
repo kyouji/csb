@@ -97,6 +97,7 @@ var theForm = document.forms['form1'];
     <th width="4%">选择</th>
     <th width="6%">票据</th>
     <th width="12%">用户名</th>
+    <th width="6%">用户编号</th>
     <th width="8%">联系人姓名</th>
     <th width="8%">联系人电话</th>
     <th width="8%">上传时间</th>
@@ -118,6 +119,7 @@ var theForm = document.forms['form1'];
                 <td align="center">
                 		<a href="/Verwalter/bill/edit?id=${item.id}&roleId=${roleId!""}">${user.username!''}</a>
                 </td>
+                <td align="center">${user.number!""}</td>
                 <td align="center">${user.realName!""}</td>
                 <td align="center">${user.mobile!""}</td>
                 <#else>
@@ -138,7 +140,10 @@ var theForm = document.forms['form1'];
                 
                 </td>
                 <td align="center">
-                    <a href="/Verwalter/bill/edit?id=${item.id}&roleId=${roleId!""}">处理</a> 
+                    <a href="/Verwalter/bill/edit?id=${item.id}&roleId=${roleId!""}">详情</a>
+                    <#if statusId?? && statusId lt 6>
+                    |&nbsp;<a href="/Verwalter/bill/deal/${item.id}?statusId=${statusId+1}">处理</a></td> 
+                    </#if>
                     <#--<a href="/Verwalter/user/edit?id=${user.id}&roleId=${roleId!""}&action=view">查看</a></td>-->
                     <#--<a href="/Verwalter/user/role?id=${user.id}">进入</a></td>-->
               </tr>

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link href="/mag/style/idialog.css" rel="stylesheet" id="lhgdialoglink">
-<title>用户-票据整理</title>
+<title>财务管理</title>
 <script type="text/javascript" src="/mag/js/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="/mag/js/lhgdialog.js"></script>
 <script type="text/javascript" src="/mag/js/layout.js"></script>
@@ -94,7 +94,7 @@ var theForm = document.forms['form1'];
                 <td align="center"><img src="<#if user.headImageUrl??&&user.headImageUrl != "">${user.headImageUrl!""} <#else>/client/images/default.jpg</#if>" width=50 height=50 /></td>
                 <td>
                   <div class="user-box" style="padding-left:0;">
-                    <h4><a href="/Verwalter/user/edit?id=${user.id}"><b>${user.username!""}</b></a></h4>
+                    <h4><a href="/Verwalter/bill/finance/edit?userId=${user.id}"><b>${user.username!""}</b></a></h4>
                     <i>注册时间：${user.registerTime!""}</i>
                     <#--
                     <span>
@@ -116,8 +116,8 @@ var theForm = document.forms['form1'];
 
                 <#--<td align="center"><#if user.statusId??><#if user.statusId==0>待审核<#elseif user.statusId==1>正常</#if></#if></td>-->
                 <td align="center">
-                    <a href="/Verwalter/user/edit?id=${user.id}&roleId=${roleId!""}">修改</a> 
-                    <#--<a href="/Verwalter/user/edit?id=${user.id}&roleId=${roleId!""}&action=view">查看</a></td>-->
+                    <a href="/Verwalter/bill/finance/edit?userId=${user.id}">财务管理</a>&nbsp;| 
+                    <a href="/Verwalter/user/pay?id=${user.id}">缴费管理</a></td>
                     <#--<a href="/Verwalter/user/role?id=${user.id}">进入</a></td>-->
               </tr>
         </#list>

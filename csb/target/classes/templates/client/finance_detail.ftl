@@ -25,7 +25,7 @@
 			<ul class="mon_box01">
 				<li>
 					<#if finance.time??&&finance.noTax??>
-						<div>${finance.time?string("MM")}月不含税收入</div>
+						<div>${finance.time?string("MM月")}不含税收入</div>
 						<p><span>${finance.noTax!'0'}</span>(元)</p>
 					</#if>
 				</li>
@@ -87,7 +87,7 @@
 				<li>
 					<div>
 						已收抵扣联<span>${finance.doneAmount!'0'}</span>份
-						<p>最早日期<span><#if finance.doneEarlyDate??>${finance.doneEarlyDate?string("yyyy-MM-dd")}</#if></span></p>
+						<p>最早日期<span><#if finance.doneEarlyDate??>${finance.doneEarlyDate?string("yyyy年MM月dd日")}</#if></span></p>
 					</div>					
 				</li>
 				<li style="background: none;">
@@ -96,13 +96,13 @@
 				<li>
 					<div>
 						未收抵扣联<span>${finance.todoAmount!'0'}</span>份
-						<p>最早日期<span><#if finance.todoEarlyDate??>${finance.todoEarlyDate?string("yyyy-MM-dd")}</#if></span></p>
+						<p>最早日期<span><#if finance.todoEarlyDate??>${finance.todoEarlyDate?string("yyyy年MM月dd日")}</#if></span></p>
 					</div>
 				</li>
 				<li>
 					<div>
 						已收抵扣联<span>${finance.doneAmount!'0'}</span>份
-						<p>最早日期<span><#if finance.doneEarlyDate??>${finance.doneEarlyDate?string("yyyy-MM-dd")}</#if></span></p>
+						<p>最早日期<span><#if finance.doneEarlyDate??>${finance.doneEarlyDate?string("yyyy年MM月dd日")}</#if></span></p>
 					</div>
 				</li>
 			</ul>
@@ -110,7 +110,7 @@
 			<ul class="mon_box02">
 				<li>
 					<div>
-						<#if finance.time??>${finance.time?string("MM")}月</#if>最高可开票金额（含税价）
+						<#if finance.time??>${finance.time?string("MM月")}</#if>最高可开票金额（含税价）
 						<p><span>${finance.maxTicket!'0'}</span>元</p>
 					</div>
 				</li>
@@ -167,8 +167,8 @@
 					</li>
 				</ul>
 			</#if>
-			<textarea name="remark" class="mon_tex">请输入补充说明</textarea>
-			<a class="mon_see" href="/download/data?name=${finance.fileUrl!''}">资金往来见附表</a>
+			<textarea name="remark" class="clear_tex" style="background-color:#ffffff;" disabled="">${finance.remark!''}</textarea>
+			<a class="mon_see" href="<#if finance.fileUrl?? && finance.fileUrl?length gt 0>/download/data?name=${finance.fileUrl!''}<#else>javascript:void(0)</#if>">资金往来见附表</a>
 			<a href="javascript:history.back(-1);" class="mon_back">返回</a>
 			<div style="height: 30px;width: 100%;"></div>
 		</article>

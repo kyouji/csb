@@ -1,5 +1,6 @@
 package com.ynyes.csb.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,8 @@ public class TdFinanceService {
     @Autowired
     TdFinanceRepo repository;
     
-    
+    @Autowired
+    TdStockService tdStockService;
     /**
      * 删除
      * 
@@ -99,11 +101,23 @@ public class TdFinanceService {
      * 根据username查找所有【票据整理】信息
      * @return
      */
-    public List<TdFinance> findByUsername(String username)
+    public List<TdFinance> findByUserId(Long userId)
     {
         Sort sort = new Sort(Direction.ASC, "sortId").and(new Sort(Direction.DESC, "time"));
         
-        return (List<TdFinance>) repository.findByUsername(username, sort);
+        return (List<TdFinance>) repository.findByUserId(userId, sort);
+    }
+    
+    //根据时间查找？
+    public List<TdFinance> findByTime(Date time)
+    {
+        return repository.findByTime(time);
+    }
+    
+    public TdFinance findByUserIdAndTime(Long userId, Date time)
+    {
+        
+        return repository.findByUserIdAndTime(userId, time);
     }
     
     
@@ -115,7 +129,6 @@ public class TdFinanceService {
     }
     
 
-
     
     /**
      * 保存
@@ -125,7 +138,8 @@ public class TdFinanceService {
      */
     public TdFinance save(TdFinance e)
     {
-        
+		// 保存赠品
+		tdStockService.save(e.getStockList());
         return repository.save(e);
     }
     

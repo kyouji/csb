@@ -80,11 +80,11 @@ public class TdGather {
     
     // 不含税收入合计
     @Column
-    private Double TotalIncome;
+    private Double totalIncome;
     
     // 销项税合计
     @Column
-    private Double TotalTax;
+    private Double totalTax;
     
     /*---------------------------------------------------------
     ===============  进货 =================
@@ -120,6 +120,15 @@ public class TdGather {
     // 进项税额合计
     @Column
     private Double totalVat;
+    
+    //小规模纳税人
+    // 本月进货发票数量
+    @Column
+    private Double inBillAmount;
+    
+    // 本月进货金额
+    @Column
+    private Double inBill;
     
     /*---------------------------------------------------------
     ===============  应纳税金 ==============
@@ -169,7 +178,7 @@ public class TdGather {
     
     // 【抵扣联】未收，最早日期
     @Column
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date deTodoDate;
     
     // 【抵扣联】已收，金额
@@ -182,16 +191,20 @@ public class TdGather {
     
     // 【抵扣联】已收，最早日期
     @Column
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date deDoneDate;
     
     // 【本月应纳所得税】
     @Column
     private Double incomeTaxTodo;
     
+    //备注
+    @Column
+    private String remark;
+    
     //补充说明
     @Column
-    private Double remark;
+    private String content;
 
 	public Long getId() {
 		return id;
@@ -305,20 +318,21 @@ public class TdGather {
 		this.noTicketTax = noTicketTax;
 	}
 
+
 	public Double getTotalIncome() {
-		return TotalIncome;
+		return totalIncome;
 	}
 
 	public void setTotalIncome(Double totalIncome) {
-		TotalIncome = totalIncome;
+		this.totalIncome = totalIncome;
 	}
 
 	public Double getTotalTax() {
-		return TotalTax;
+		return totalTax;
 	}
 
 	public void setTotalTax(Double totalTax) {
-		TotalTax = totalTax;
+		this.totalTax = totalTax;
 	}
 
 	public Double getTaxRetention() {
@@ -497,13 +511,39 @@ public class TdGather {
 		this.incomeTaxTodo = incomeTaxTodo;
 	}
 
-	public Double getRemark() {
+	public String getRemark() {
 		return remark;
 	}
 
-	public void setRemark(Double remark) {
+	public void setRemark(String remark) {
 		this.remark = remark;
 	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public Double getInBillAmount() {
+		return inBillAmount;
+	}
+
+	public void setInBillAmount(Double inBillAmount) {
+		this.inBillAmount = inBillAmount;
+	}
+
+	public Double getInBill() {
+		return inBill;
+	}
+
+	public void setInBill(Double inBill) {
+		this.inBill = inBill;
+	}
+
+	
 
 }
   

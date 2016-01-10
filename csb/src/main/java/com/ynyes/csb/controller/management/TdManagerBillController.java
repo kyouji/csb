@@ -38,15 +38,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.csb.entity.TdArticle;
 import com.ynyes.csb.entity.TdBill;
 import com.ynyes.csb.entity.TdBillType;
 import com.ynyes.csb.entity.TdDemand;
+import com.ynyes.csb.entity.TdFinance;
+import com.ynyes.csb.entity.TdGather;
 import com.ynyes.csb.entity.TdManager;
 import com.ynyes.csb.entity.TdManagerRole;
 import com.ynyes.csb.entity.TdUser;
 import com.ynyes.csb.service.TdArticleService;
 import com.ynyes.csb.service.TdBillService;
 import com.ynyes.csb.service.TdBillTypeService;
+import com.ynyes.csb.service.TdFinanceService;
+import com.ynyes.csb.service.TdGatherService;
 import com.ynyes.csb.service.TdManagerLogService;
 import com.ynyes.csb.service.TdManagerRoleService;
 import com.ynyes.csb.service.TdManagerService;
@@ -72,6 +77,12 @@ public class TdManagerBillController {
 	
 	@Autowired
 	TdUserService tdUserService;
+	
+	@Autowired
+	TdGatherService tdGatherService;
+	
+	@Autowired
+	TdFinanceService tdFinanceService;
 	
 	 @RequestMapping(value="/list/{statusId}")
 	    public String billList(Integer page,
@@ -342,6 +353,7 @@ public class TdManagerBillController {
 		 @RequestMapping(value="/deal/{id}")
 		    public String billDeal(@PathVariable Long id,
 		    					Long statusId,
+		    					String time,
 		                        String __VIEWSTATE,
 		                        ModelMap map,
 		                        HttpServletRequest req){
@@ -357,8 +369,29 @@ public class TdManagerBillController {
 		        {
 		        	TdBill bill = tdBillService.findOne(id);
 		            map.addAttribute("bill",bill);
-		            
 		            map.addAttribute("user", tdUserService.findOne(bill.getUserId()));
+		            
+		            Date date  = null;
+		            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+		            if(null == time)
+		            {
+		            	time = sdf.format(new Date()); 
+		            }
+		      
+	    			try {
+    					date = sdf.parse(time);
+	    			} catch (Exception e) {
+	    				e.printStackTrace();
+	    			}
+		          
+		            map.addAttribute("date", date);
+		            
+		            //试试能不能直接用new Date()找到当月的票据汇总
+		            TdGather tdGather = tdGatherService.findByUserIdAndTime(bill.getUserId(),date);
+		            if (null != tdGather)
+		            {
+		            	map.addAttribute("tdGather", tdGather);
+		            }
 		        }
 		        if(null != statusId)
 		        {
@@ -375,7 +408,63 @@ public class TdManagerBillController {
 		        return "/site_mag/center";
 		    }
 	 
-	 
+	 //票据整理 提交 类TdGather
+	 @RequestMapping(value="/gather/save", method = RequestMethod.POST)
+	 @ResponseBody
+	    public Map<String,Object> gatherSave(TdGather tdGather,
+	    		Long billId,
+	            String __EVENTTARGET,
+	            String __EVENTARGUMENT,
+	            String __VIEWSTATE,
+	            ModelMap map,
+	            HttpServletRequest req){
+		 Map<String, Object> res = new HashMap<String, Object>();
+			res.put("code", 1);
+			
+	        String username = (String) req.getSession().getAttribute("manager");
+	        if (null == username) {
+	        	res.put("msg", "请先登录！");
+	        	res.put("check", 0);
+	            return res;
+	        }
+	        
+	        String logType = null;
+	        TdGather check = tdGatherService.findByUserIdAndTime(tdGather.getUserId(), tdGather.getTime()); //查重，每月应只有一个gather表
+	        if (null == tdGather.getId())
+	        {
+	            logType = "add";
+		        if (null != check)
+		        {
+		        	res.put("msg", "该月份的票据整理已存在！");
+		        	return res;
+		        }
+	        }
+	        else
+	        {
+	            logType = "edit";
+//			        if (null != check && check.getId() != tdGather.getId())
+//			        {
+//			        	res.put("msg", "该月份的票据整理已存在！");
+//			        	return res;
+//			        }
+	        }
+	        
+	        tdGather.setStatusId(0L);
+	        tdGatherService.save(tdGather);
+	        
+	        if(null != billId)
+	        {
+	        	TdBill bill =	tdBillService.findOne(billId);
+	        	bill.setStatusId(3L);
+	        	tdBillService.save(bill);
+	        }
+	        
+	        tdManagerLogService.addLog(logType, "整理票据", req);
+	        
+
+	        res.put("code", 0);
+	        return res;
+	    }
 	 
 	//票据整理 用户列表 2016年1月10日 02:04:27
 	    @RequestMapping(value="/user/list")
@@ -454,6 +543,202 @@ public class TdManagerBillController {
 	        
 	        return "/site_mag/user_list_bill";
 	    }
+	    
+	    
+	  //财务管理，人工处理
+		 @RequestMapping(value="/finance/edit")
+		    public String financeEdit( Long billId,
+		    					Long userId,
+		    					Long statusId,
+		    					String time,
+		                        String __VIEWSTATE,
+		                        ModelMap map,
+		                        HttpServletRequest req){
+		        String username = (String) req.getSession().getAttribute("manager");
+		        if (null == username)
+		        {
+		            return "redirect:/Verwalter/login";
+		        }
+		        
+		        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+		        
+		        Date date  = null;
+	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+	            if(null == time)
+	            {
+	            	time = sdf.format(new Date()); 
+	            }
+	      
+    			try {
+					date = sdf.parse(time);
+    			} catch (Exception e) {
+    				e.printStackTrace();
+    			}
+	          
+	            map.addAttribute("date", date);
+		      
+		        if (null != billId)
+		        {
+		        	TdBill bill = tdBillService.findOne(billId);
+		            map.addAttribute("bill",bill);
+		            map.addAttribute("user", tdUserService.findOne(bill.getUserId()));
+		            
+		            TdFinance tdFinance = tdFinanceService.findByUserIdAndTime(bill.getUserId(),date);
+		            if (null != tdFinance)
+		            {
+		            	map.addAttribute("tdFinance", tdFinance);
+		            }
+		            
+		            return "/site_mag/user_finance_edit";
+		        }
+		        else if (null != userId)
+		        {
+		            map.addAttribute("user", tdUserService.findOne(userId));
+		            
+		            TdFinance tdFinance = tdFinanceService.findByUserIdAndTime(userId,date);
+		            if (null != tdFinance)
+		            {
+		            	map.addAttribute("tdFinance", tdFinance);
+		            }
+		            
+		            return "/site_mag/user_finance_edit";
+		        }
+
+		        return "/site_mag/center";
+		    }	    
+		 
+		 //财务管理 提交 类TdFinance
+		 @RequestMapping(value="/finance/save", method = RequestMethod.POST)
+		 @ResponseBody
+		    public Map<String,Object> financeSave(TdFinance tdFinance,
+		    		Long billId,
+		    		Long userId,
+		            String __EVENTTARGET,
+		            String __EVENTARGUMENT,
+		            String __VIEWSTATE,
+		            ModelMap map,
+		            HttpServletRequest req){
+			 Map<String, Object> res = new HashMap<String, Object>();
+				res.put("code", 1);
+				
+		        String username = (String) req.getSession().getAttribute("manager");
+		        if (null == username) {
+		        	res.put("msg", "请先登录！");
+		        	res.put("check", 0);
+		            return res;
+		        }
+		        
+		        String logType = null;
+		        TdFinance check = tdFinanceService.findByUserIdAndTime(tdFinance.getUserId(), tdFinance.getTime()); //查重，每月应只有一个finance表
+		        if (null == tdFinance.getId())
+		        {
+		            logType = "add";
+			        if (null != check)
+			        {
+			        	res.put("msg", "该月份的票据整理已存在！");
+			        	return res;
+			        }
+		        }
+		        else
+		        {
+		            logType = "edit";
+//				        if (null != check && check.getId() != tdGather.getId())
+//				        {
+//				        	res.put("msg", "该月份的票据整理已存在！");
+//				        	return res;
+//				        }
+		        }
+		        
+		        tdFinanceService.save(tdFinance);
+		        
+		        if(null != billId)
+		        {
+		        	TdBill bill =	tdBillService.findOne(billId);
+		        	bill.setStatusId(4L);
+		        	tdBillService.save(bill);
+		        }
+		        
+		        tdManagerLogService.addLog(logType, "财务管理", req);
+		        
+
+		        res.put("code", 0);
+		        return res;
+		    }		
+		 
+		 
+		 @RequestMapping(value = "/list/dialog/{type}")
+			public String ListDialog(@PathVariable String type, String keywords, Long categoryId, Integer page, Long priceId,
+					Integer size, Integer total, String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, ModelMap map,
+					HttpServletRequest req) {
+				String username = (String) req.getSession().getAttribute("manager");
+				if (null == username) {
+					return "redirect:/Verwalter/login";
+				}
+				if (null != __EVENTTARGET) {
+					if (__EVENTTARGET.equalsIgnoreCase("btnPage")) {
+						if (null != __EVENTARGUMENT) {
+							page = Integer.parseInt(__EVENTARGUMENT);
+						}
+					} else if (__EVENTTARGET.equalsIgnoreCase("btnSearch")) {
+
+					} else if (__EVENTTARGET.equalsIgnoreCase("categoryId")) {
+
+					}
+				}
+
+				if (null == page || page < 0) {
+					page = 0;
+				}
+
+				if (null == size || size <= 0) {
+					size = SiteMagConstant.pageSize;
+					;
+				}
+
+				if (null != keywords) {
+					keywords = keywords.trim();
+				}
+
+//				Page<TdGoods> goodsPage = null;
+//
+//				if (null == categoryId) {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService.findAllOrderBySortIdAsc(page, size);
+//					} else {
+//						goodsPage = tdGoodsService.searchAndOrderBySortIdAsc(keywords, page, size);
+//					}
+//				} else {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService.findByCategoryIdTreeContainingOrderBySortIdAsc(categoryId, page, size);
+//					} else {
+//						goodsPage = tdGoodsService.searchAndFindByCategoryIdOrderBySortIdAsc(keywords, categoryId, page, size);
+//					}
+//				}
+
+//				map.addAttribute("goods_page", goodsPage);
+
+				// 参数注回
+//				map.addAttribute("category_list", tdProductCategoryService.findAll());
+				map.addAttribute("page", page);
+				map.addAttribute("size", size);
+				map.addAttribute("total", total);
+				map.addAttribute("keywords", keywords);
+				map.addAttribute("categoryId", categoryId);
+				map.addAttribute("__EVENTTARGET", __EVENTTARGET);
+				map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
+				map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+
+				if (null != type && type.equalsIgnoreCase("gift")) {
+					return "/site_mag/dialog_goods_gift_list";
+				}
+				else if (null != type && type.equalsIgnoreCase("stock")){
+					return "/site_mag/dialog_stock_list";
+				}
+
+
+
+				return "/site_mag/dialog_goods_combination_list";
+			}		 
 	 
 	 
 	 private void btnDelete( Long[] ids, Integer[] chkIds)

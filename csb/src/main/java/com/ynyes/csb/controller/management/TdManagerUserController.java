@@ -1,9 +1,8 @@
 package com.ynyes.csb.controller.management;
 
-import java.util.Calendar;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,11 +22,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ynyes.csb.entity.TdApply;
 import com.ynyes.csb.entity.TdApplyType;
 import com.ynyes.csb.entity.TdBill;
+import com.ynyes.csb.entity.TdFinance;
+import com.ynyes.csb.entity.TdPay;
 import com.ynyes.csb.entity.TdUser;
 import com.ynyes.csb.service.TdApplyService;
 import com.ynyes.csb.service.TdApplyTypeService;
 import com.ynyes.csb.service.TdAreaService;
+import com.ynyes.csb.service.TdEnterTypeService;
 import com.ynyes.csb.service.TdManagerLogService;
+import com.ynyes.csb.service.TdPayService;
+import com.ynyes.csb.service.TdPhotoService;
 import com.ynyes.csb.service.TdUserService;
 import com.ynyes.csb.util.SiteMagConstant;
 
@@ -56,6 +60,14 @@ public class TdManagerUserController {
     @Autowired
     TdApplyTypeService tdApplyTypeService;
     
+    @Autowired
+    TdEnterTypeService tdEnterTypeService;
+    
+    @Autowired
+    TdPayService tdPayService;
+    
+    @Autowired
+    TdPhotoService tdPhotoService;
     @RequestMapping(value="/check", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> validateForm(String param, Long id) {
@@ -244,6 +256,8 @@ public class TdManagerUserController {
         }
         
         map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+        
+        map.addAttribute("enterType_list", tdEnterTypeService.findByIsEnableTrueOrderBySortIdAsc());
       
         if (null != id)
         {
@@ -251,6 +265,7 @@ public class TdManagerUserController {
             map.addAttribute("user",user);
             map.addAttribute("id",id);
             map.addAttribute("roleId",user.getRoleId());
+            map.addAttribute("photo", tdPhotoService.findByStatusIdAndUserId(2L, user.getId()));
         }
         map.addAttribute("roleId",0);
         return "/site_mag/user_edit";
@@ -290,6 +305,55 @@ public class TdManagerUserController {
         return "redirect:/Verwalter/user/list/"+tdUser.getRoleId();
     }
     
+    @RequestMapping(value="/pay")
+    public String userPay(Long id,
+    					String time,
+                        String __VIEWSTATE,
+                        ModelMap map,
+                        HttpServletRequest req){
+        String username = (String) req.getSession().getAttribute("manager");
+        if (null == username)
+        {
+            return "redirect:/Verwalter/login";
+        }
+        
+        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+        
+        if (null != id)
+        {
+        	TdUser user = tdUserService.findOne(id);
+            map.addAttribute("user",user);
+            map.addAttribute("id",id);
+        
+        
+        Date date  = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        if(null == time)
+        {
+        	time = sdf.format(new Date()); 
+        }
+  
+		try {
+			date = sdf.parse(time);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+      
+        map.addAttribute("date", date);
+      
+
+
+            
+            TdPay tdPay = tdPayService.findByUserIdAndTime(user.getId(),date);
+            if (null != tdPay)
+            {
+            	map.addAttribute("tdPay", tdPay);
+            }
+
+        }
+        
+        return "/site_mag/user_pay";
+    }
     
     
     @RequestMapping(value = "/role" , method = RequestMethod.GET)
@@ -482,6 +546,7 @@ public class TdManagerUserController {
 
 			return res;
 	    }
+   
     
     
     @ModelAttribute

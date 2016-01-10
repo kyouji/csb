@@ -39,7 +39,7 @@
 						<#if gather.title??&&gather?length gt 0>
 							${gather.title}
 						<#elseif gather.time??>
-							${gather.time?string("MM")}月票据整理汇总如下
+							${gather.time?string("MM月")}票据整理汇总如下
 						</#if>
 					</h3>
 				</li>
@@ -47,9 +47,9 @@
 					<p>收入</p>
 				</li>
 				<li>
-					<#if gather.billgeneralAmount??&&gather.generalIncome??>
+					<#if gather.generalAmount??&&gather.generalIncome??>
 						<div class="line">
-							<p>本月普票<span>${gather.billgeneralAmount!'0'}</span>份</p>
+							<p>本月普票<span>${gather.generalAmount!'0'}</span>份</p>
 							<p>不含税收入<span>${gather.generalIncome!'0'}</span>(元)</p>
 						</div>
 					</#if>
@@ -183,7 +183,7 @@
 				</li>
 				<li class="li06">
 					<#if gather.deTodoDate??>
-						<div>最早日期：${gather.deTodoDate?string("yyyy-MM-dd")}</div>
+						<div>最早日期：${gather.deTodoDate?string("yyyy年MM月dd日")}</div>
 					</#if>
 				</li>
 				<li>
@@ -196,7 +196,7 @@
 				</li>
 				<li class="li06">
 					<#if gather.deDoneDate??>
-						<div>最早日期：${gather.deDoneDate?string("yyyy-MM-dd")}</div>
+						<div>最早日期：${gather.deDoneDate?string("yyyy年MM月dd日")}</div>
 					</#if>
 				</li>
 				<li>
@@ -208,9 +208,13 @@
 					</#if>
 				</li>
 			</ul>
-
 			
-			<textarea name="remark" class="clear_tex">请输入补充说明</textarea>
+			<li class="li05">
+				<p>补充说明</p>
+			</li>
+			<textarea name="remark" class="clear_tex" style="background-color:#ffffff;" disabled="">${gather.remark!''}</textarea>
+			<li class="li05">
+			
 			<a href="javascript:remarkSubmit();" class="clear_back">确认无误</a>
 			<div style="height: 30px;width: 100%;"></div>
 			<#else>

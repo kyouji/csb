@@ -1,5 +1,6 @@
 package com.ynyes.csb.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -21,8 +22,10 @@ public interface TdGatherRepo extends
 		PagingAndSortingRepository<TdGather, Long>,
 		JpaSpecificationExecutor<TdGather> 
 { 
+	 TdGather findByUserIdAndTime(Long userId, Date time);
+	 
     Page<TdGather> findByTitleContainingOrderBySortIdAsc(String keywords, Pageable page);
     
     List<TdGather> findByUserId(Long userId, Sort sort);
-
+    List<TdGather> findByTime(Date time);
 }
