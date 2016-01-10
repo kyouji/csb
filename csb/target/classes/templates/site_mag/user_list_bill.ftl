@@ -68,12 +68,12 @@ var theForm = document.forms['form1'];
     <th width="6%">编号</th>
     <th width="6%">头像</th>
     <th align="left" width="12%">用户名</th>
-    <th align="center" width="20%">公司名称</th>
-    <th align="center" width="4%">公司类型</th>
-    <th width="8%">票据总计</th>
-    <th width="8%">未处理票据</th>
-    <th width="8%">最近登录</th>
-    <th width="6%">操作</th>
+    <th align="center" width="15%">公司名称</th>
+    <th align="center" width="6%">公司类型</th>
+    <th width="6%">票据总计</th>
+    <th width="6%">未处理票据</th>
+    <th width="6%">未缴费</th>
+    <th width="12%">操作</th>
   </tr>
 
     <#if user_page??>
@@ -110,14 +110,35 @@ var theForm = document.forms['form1'];
                 </td>
                 <td align="center">${user.enterName!"&nbsp;"}</td>
                 <td align="center">${user.enterType!''}</td>
-                <td align="center">${user.realName!""}</td>
-                <td align="center">${user.mobile!""}</td>
-                <td align="center">${user.lastLoginTime!""}</td>
+                <td align="center">
+                <#if ("billAmount_"+user.id)?eval??>
+                    <#assign billAmount=("billAmount_"+user.id)?eval >
+                    ${billAmount!''}
+                <#else>
+                0   
+                </#if>        
+                </td>
+                <td align="center">
+                <#if ("todo_"+user.id)?eval??>
+                    <#assign todo=("todo_"+user.id)?eval>
+                    ${todo!''}
+                <#else>
+                0   
+                </#if> 
+                </td>
+                <td align="center">
+                <#if ("pay_"+user.id)?eval??>
+                    <#assign pay=("pay_"+user.id)?eval>
+                    ${pay!''}
+                <#else>
+                0    
+                </#if>
+                </td>
 
                 <#--<td align="center"><#if user.statusId??><#if user.statusId==0>待审核<#elseif user.statusId==1>正常</#if></#if></td>-->
                 <td align="center">
-                    <a href="/Verwalter/bill/finance/edit?userId=${user.id}">财务管理</a>&nbsp;| 
-                    <a href="/Verwalter/user/pay?id=${user.id}">缴费管理</a></td>
+                    <a href="/Verwalter/bill/finance/edit?userId=${user.id}">处理财务</a>&nbsp;| 
+                    <a href="/Verwalter/user/pay?id=${user.id}">税费扣缴</a></td>
                     <#--<a href="/Verwalter/user/role?id=${user.id}">进入</a></td>-->
               </tr>
         </#list>

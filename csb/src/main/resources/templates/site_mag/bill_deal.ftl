@@ -33,14 +33,9 @@ $(document).ready(function(){
             callback: function (data) { 
                 if (data.code == 0)
                 {
-                    $.dialog.alert("提交成功");
-                    /**
-                    $(".menu").removeClass("selected");
-                    $(".menu").eq(1).addClass("selected");
-                    $(".tab-content").hide();
-                    $(".tab-content").eq(1).show();
-                    **/
-                    location.href='/Verwalter/bill/list/2';
+                	var dialog = $.dialog.confirm('操作成功！继续进行下一步【财务处理】，确认吗？', 
+                            function(){location.href='/Verwalter/bill/finance/edit<#if bill??>?billId=${bill.id?c}</#if>';},
+                            function(){location.href='/Verwalter/bill/list/3';});
                 }
                 else 
                 {
@@ -130,7 +125,7 @@ function selectDate(time)
                  <input name="time" type="text" id="time" value="<#if gather??&&gather.time??>${gather.time?string("yyyy-MM")}<#elseif date??>${date?string("yyyy-MM")}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" "  onchange="javascript:selectDate(this.value);">
                  <i  style="right: 70px;">日期</i>
              </div>
-             <#--<span class="Validform_checktip">不选择默认当前时间</span>-->
+             <#--<span class="Validform_checktip">不选择默认当前月份</span>-->
          </dd>
         </dl>
     <dl>
@@ -151,6 +146,13 @@ function selectDate(time)
     <dt>票据下载</dt>
     <dd><a href="/download/data?name=${bill.imgUrl!''}">${bill.imgUrl!''}</a></dd>
   </dl>
+    <dl>
+        <dt>标题</dt>
+        <dd>
+            <input name="title" type="text" value="<#if tdGather??>${tdGather.title!""}</#if>" id="title" class="input normal" ignore="ignore" sucmsg=" ">
+            <span class="Validform_checktip">*不填则默认显示：某月票据整理汇总如下</span>
+        </dd>
+    </dl>  
 	<dl>
 	    <dt>排序数字</dt>
 	    <dd>

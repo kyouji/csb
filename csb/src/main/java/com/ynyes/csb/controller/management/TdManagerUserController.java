@@ -265,7 +265,7 @@ public class TdManagerUserController {
             map.addAttribute("user",user);
             map.addAttribute("id",id);
             map.addAttribute("roleId",user.getRoleId());
-            map.addAttribute("photo", tdPhotoService.findByStatusIdAndUserId(2L, user.getId()));
+            map.addAttribute("photo_list", tdPhotoService.findByStatusIdAndUserId(2L, user.getId()));
         }
         map.addAttribute("roleId",0);
         return "/site_mag/user_edit";

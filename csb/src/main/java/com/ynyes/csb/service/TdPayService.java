@@ -108,6 +108,14 @@ public class TdPayService {
         return (List<TdPay>) repository.findByUserId(userId, sort);
     }
     
+    //找出未缴费的
+    public List<TdPay> findByUserIdAndIsPaidFalse(Long userId)
+    {
+        Sort sort = new Sort(Direction.ASC, "sortId").and(new Sort(Direction.DESC, "time"));
+        
+        return (List<TdPay>) repository.findByUserIdAndIsPaidFalse(userId, sort);
+    }
+    
     //根据时间查找？
     public List<TdPay> findByTime(Date time)
     {

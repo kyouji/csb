@@ -25,5 +25,6 @@ public interface TdPayRepo extends
 	 TdPay findByUserIdAndTime(Long userId, Date time);
 	 
     List<TdPay> findByUserId(Long userId, Sort sort);
+    List<TdPay> findByUserIdAndIsPaidFalse(Long userId, Sort sort);
     List<TdPay> findByTime(Date time);
 }

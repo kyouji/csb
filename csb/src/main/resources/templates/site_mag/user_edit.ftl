@@ -387,14 +387,14 @@ $(function () {
     <dl>
     <dt>证件</dt>
     <dd>
-        <img src="<#if photo??&&photo.imgUrl??&&photo.imgUrl != "">/images/${photo.imgUrl!""} <#else>/client/images/foote22.png</#if>"  />
+        <#if photo_list??>
+            <#list photo_list as item>
+                <img src="/images/${item.imgUrl!""}" href="/download/data?name=${item.imgUrl!''}" />
+                <span>下载</span><a href="/download/data?name=${item.imgUrl!''}">${item.imgUrl!''}</a>
+            </#list>
+        </#if>        
     </dd>
   </dl>
-  <dl>
-    <dt>证件下载</dt>
-    <dd><a href="/download/data?name=${photo.imgUrl!''}">${photo.imgUrl!''}</a></dd>
-  </dl>
-
 
 </div>
 

@@ -33,14 +33,10 @@ $(document).ready(function(){
             callback: function (data) { 
                 if (data.code == 0)
                 {
-                    $.dialog.alert("提交成功");
-                    /**
-                    $(".menu").removeClass("selected");
-                    $(".menu").eq(1).addClass("selected");
-                    $(".tab-content").hide();
-                    $(".tab-content").eq(1).show();
-                    **/
-                    location.href='/Verwalter/bill/user/list';
+                	var dialog = $.dialog.confirm('操作成功！继续进行下一步【上传财务状况表】，确认吗？', 
+                            function(){location.href='/Verwalter/bill/finance/upload<#if bill??>?billId=${bill.id?c}</#if>';},
+                            function(){location.href='/Verwalter/bill/user/list';});
+                    
                 }
                 else 
                 {

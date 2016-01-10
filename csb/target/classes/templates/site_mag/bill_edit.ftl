@@ -40,12 +40,42 @@
 			            }
 					}
 					else{
+						/**
 						alert(data.msg)
 						if(data.statusId != "")
 							{
 							  location.href='/Verwalter/bill/deal/${bill.id?c}?statusId='+statusId;
 							}
-						
+						**/
+						if (data.statusId == 2)
+						{
+						    var dialog = $.dialog.alert("操作成功！票据已改为待处理状态",
+						    		function(){location.href='/Verwalter/bill/list/2';});
+						}
+						else if (data.statusId == 3)
+						{
+							var dialog = $.dialog.confirm('操作成功！继续进行下一步【票据整理】，确认吗？', 
+									function(){location.href='/Verwalter/bill/deal/<#if bill??>${bill.id?c}</#if>?statusId=3';},
+					                function(){location.href='/Verwalter/bill/list/2';});
+						}
+						else if (data.statusId == 4)
+						{
+						    var dialog = $.dialog.confirm('操作成功！继续进行下一步【财务处理】，确认吗？', 
+                                   function(){location.href='/Verwalter/bill/finance/edit<#if bill??>?billId=${bill.id?c}</#if>';},
+                                   function(){location.href='/Verwalter/bill/list/3';});
+						}
+						else if (data.statusId == 5)
+                        {
+                            var dialog = $.dialog.confirm('操作成功！继续进行下一步【税费扣缴】，确认吗？', 
+                                function(){location.href='/Verwalter/user/pay<#if user??>?id=${user.id?c}</#if>';},
+                                function(){location.href='/Verwalter/bill/list/4';});
+                        }
+						else if (data.statusId == 6)
+                        {
+                            var dialog = $.dialog.confirm('操作成功！继续进行下一步【上传财务状况表】，确认吗？', 
+                                function(){location.href='/Verwalter/bill/finance/upload<#if bill??>?billId=${bill.id?c}</#if>';},
+                                function(){location.href='/Verwalter/bill/list/5';});
+                        }
 						
 					}
 			      }

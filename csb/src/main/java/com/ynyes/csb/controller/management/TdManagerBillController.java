@@ -46,6 +46,7 @@ import com.ynyes.csb.entity.TdFinance;
 import com.ynyes.csb.entity.TdGather;
 import com.ynyes.csb.entity.TdManager;
 import com.ynyes.csb.entity.TdManagerRole;
+import com.ynyes.csb.entity.TdPay;
 import com.ynyes.csb.entity.TdUser;
 import com.ynyes.csb.service.TdArticleService;
 import com.ynyes.csb.service.TdBillService;
@@ -55,6 +56,7 @@ import com.ynyes.csb.service.TdGatherService;
 import com.ynyes.csb.service.TdManagerLogService;
 import com.ynyes.csb.service.TdManagerRoleService;
 import com.ynyes.csb.service.TdManagerService;
+import com.ynyes.csb.service.TdPayService;
 import com.ynyes.csb.service.TdUserService;
 import com.ynyes.csb.util.SiteMagConstant;
 /**
@@ -83,6 +85,9 @@ public class TdManagerBillController {
 	
 	@Autowired
 	TdFinanceService tdFinanceService;
+	
+	@Autowired
+	TdPayService tdPayService;
 	
 	 @RequestMapping(value="/list/{statusId}")
 	    public String billList(Integer page,
@@ -298,8 +303,8 @@ public class TdManagerBillController {
 	        return "/site_mag/bill_edit";
 	    }
 	 
-	 @RequestMapping(value="/save")
-	 @ResponseBody
+    @RequestMapping(value="/save")
+    @ResponseBody
     public Map<String,Object> billSave(Long id,
 	    					Long statusId,
 	    					String remark,
@@ -320,27 +325,15 @@ public class TdManagerBillController {
 //	        	bill.setStatusId(statusId);
 	        	bill.setRemark(remark);
 	        	bill.setFinishTime(new Date());
-	        	tdBillService.save(bill);
 	        	res.put("statusId", statusId);
-	        	if(statusId == 2)
+	        	if(statusId == 2 )
 	        	{
-	        		res.put("msg", "操作成功！票据已改为待处理状态");
+		        	bill.setStatusId(statusId);
+		        	tdBillService.save(bill);
 	        	}
-	        	else if(statusId == 3)
+	        	else if(statusId == 3 || statusId == 4 || statusId == 5 || statusId == 6)
 	        	{
-	        		res.put("msg", "操作成功！请填写票据整理表单");
-	        	}
-	        	else if(statusId == 4)
-	        	{
-	        		res.put("msg", "操作成功！请进行相关用户的财务处理");
-	        	}
-	        	else if(statusId == 5)
-	        	{
-	        		res.put("msg", "操作成功！请进行相关用户的税费扣缴");
-	        	}
-	        	else if(statusId == 6)
-	        	{
-	        		res.put("msg", "操作成功！请上传用户的财务状况表");
+		        	tdBillService.save(bill);
 	        	}
 	        }
 
@@ -392,18 +385,31 @@ public class TdManagerBillController {
 		            {
 		            	map.addAttribute("tdGather", tdGather);
 		            }
-		        }
-		        if(null != statusId)
-		        {
-		        	map.addAttribute("statusId", statusId);
-		        	if(statusId == 3)
-		        	{
-		        		return "/site_mag/bill_deal";
-		        	}
-		        	else 
-		        	{
-		        		return "redirect:/Verwalter/bill/list/"+statusId;
-		        	}
+		        
+			        if(null != statusId)
+			        {
+			        	map.addAttribute("statusId", statusId);
+			        	if(statusId == 3)
+			        	{
+			        		return "/site_mag/bill_deal";
+			        	}
+			        	else if(statusId == 4)
+			        	{
+			        		return "redirect:/Verwalter/bill/finance/edit?billId="+bill.getId();
+			        	}
+			        	else if(statusId == 5)
+			        	{
+			        		return "redirect:/Verwalter/user/pay/id="+bill.getUserId();
+			        	}
+			        	else if(statusId == 6)
+			        	{
+			        		return "redirect:/Verwalter/bill/upload?billId="+bill.getId();
+			        	}
+			        	else 
+			        	{
+			        		return "redirect:/Verwalter/bill/list/"+statusId;
+			        	}
+			        }
 		        }
 		        return "/site_mag/center";
 		    }
@@ -534,6 +540,16 @@ public class TdManagerBillController {
 	        		if(null != billList)
 	        		{
 	        			map.addAttribute("billAmount_"+item.getId(), billList.size());
+	        		}
+	        		List<TdBill> todo = tdBillService.findByStatusIdAndUserId(2L,item.getId());
+	        		if(null != todo)
+	        		{
+	        			map.addAttribute("todo_"+item.getId(), todo.size());
+	        		}
+	        		List<TdPay> pay = tdPayService.findByUserIdAndIsPaidFalse(item.getId());
+	        		if(null != pay)
+	        		{
+	        			map.addAttribute("pay_"+item.getId(), pay.size());
 	        		}
 	        	}
 	        }
