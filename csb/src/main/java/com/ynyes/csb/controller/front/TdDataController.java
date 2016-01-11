@@ -3,6 +3,8 @@ package com.ynyes.csb.controller.front;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,6 +24,7 @@ import com.ynyes.csb.entity.TdData;
 import com.ynyes.csb.entity.TdNavigationMenu;
 import com.ynyes.csb.entity.TdUser;
 import com.ynyes.csb.service.TdArticleService;
+import com.ynyes.csb.service.TdBillService;
 import com.ynyes.csb.service.TdCommonService;
 import com.ynyes.csb.service.TdDataService;
 import com.ynyes.csb.service.TdDataTypeService;
@@ -45,6 +49,9 @@ public class TdDataController {
 	
 	@Autowired
 	private TdNavigationMenuService tdNavigationMenuService;
+	
+	@Autowired
+	private TdBillService tdBillService;
 	
 	String filepath = SiteMagConstant.imagePath;
 
@@ -75,12 +82,46 @@ public class TdDataController {
 	        
 	        return "/client/data";
 	    }
-	    
+	 
+	 @RequestMapping(value="/download/data", method = RequestMethod.GET)
+	    @ResponseBody
+	    public void download(String name,Long id,
+	                HttpServletResponse resp,
+	                HttpServletRequest req) throws IOException {
+	        if (null == name)
+	        {
+	            return;
+	        }
+	        
+	        OutputStream os = resp.getOutputStream();  
+	        
+	        File file = new File(filepath +"/" + name);
+	        
+	        if (file.exists())
+	        {
+	            try {
+	                resp.reset();
+	                resp.setHeader("Content-Disposition", "attachment; filename="
+	                		+URLEncoder.encode(name, "UTF-8"));
+	                resp.setContentType("application/octet-stream; charset=utf-8");
+	                os.write(FileUtils.readFileToByteArray(file));
+	                os.flush();
+	            } finally {
+	                if (os != null) {
+	                    os.close();
+	                }
+	            }
+	        }
+	        else 
+	        {
+	        	return;
+	        }
+	    }
 	
-	
-	@RequestMapping(value="/download/data", method = RequestMethod.GET)
+	//票据下载
+	@RequestMapping(value="/download/bill/{id}", method = RequestMethod.GET)
     @ResponseBody
-    public void download(String name,
+    public void downloadBill(String name,@PathVariable Long id,
                 HttpServletResponse resp,
                 HttpServletRequest req) throws IOException {
         if (null == name)
@@ -92,12 +133,29 @@ public class TdDataController {
         
         File file = new File(filepath +"/" + name);
         
+        String downloadName = name;
+        if(null != id)
+        {
+        	TdBill bill = tdBillService.findOne(id);
+        	
+        	if(null != bill)
+        	{
+        		TdUser user =tdUserService.findOne(bill.getUserId());
+        		if(null != user)
+        		{
+        			 String ext = name.substring(name.lastIndexOf("."));
+        			SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月");
+        			downloadName = sdf.format(bill.getTime())+"票据_"+user.getEnterName()+"_"+user.getNumber()+ext;
+        		}
+        	}
+        }
+        
         if (file.exists())
         {
             try {
                 resp.reset();
                 resp.setHeader("Content-Disposition", "attachment; filename="
-                        + name);
+                		+URLEncoder.encode(downloadName, "UTF-8"));
                 resp.setContentType("application/octet-stream; charset=utf-8");
                 os.write(FileUtils.readFileToByteArray(file));
                 os.flush();

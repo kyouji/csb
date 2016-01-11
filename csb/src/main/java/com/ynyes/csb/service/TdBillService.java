@@ -268,4 +268,53 @@ public class TdBillService {
 				.and(new Sort(Direction.ASC,"id")));
 		return  repository.findByTimeAfterAndTimeBeforeAndStatusIdAndBillTypeId(date1, date2, StatusId, billTypeId, pageRequest);
 	}
+	
+	
+	//意外情况 指定用户的票据筛选
+	public Page<TdBill> findByUserId(Long userId, int page , int size){
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "time").and(new Sort(Direction.DESC, "finishTime"))
+				.and(new Sort(Direction.ASC,"id")));
+		return  repository.findByUserId( userId, pageRequest);
+	}
+	
+	public Page<TdBill> findByStatusIdAndUserId(Long statusId, Long userId, int page , int size){
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "time").and(new Sort(Direction.DESC, "finishTime"))
+				.and(new Sort(Direction.ASC,"id")));
+		return  repository.findByStatusIdAndUserId(statusId,  userId, pageRequest);
+	}
+	
+	public Page<TdBill> findByTimeBeforeAndUserId(Date date2, Long userId, int page , int size){
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "time").and(new Sort(Direction.DESC, "finishTime"))
+				.and(new Sort(Direction.ASC,"id")));
+		return  repository.findByTimeBeforeAndUserId(date2,  userId, pageRequest);
+	}
+	
+	public Page<TdBill> findByTimeBeforeAndStatusIdAndUserId(Date date2, Long statusId, Long userId, int page , int size){
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "time").and(new Sort(Direction.DESC, "finishTime"))
+				.and(new Sort(Direction.ASC,"id")));
+		return  repository.findByTimeBeforeAndStatusIdAndUserId(date2, statusId, userId, pageRequest);
+	}
+	
+	public Page<TdBill> findByTimeAfterAndUserId(Date date1, Long userId, int page , int size){
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "time").and(new Sort(Direction.DESC, "finishTime"))
+				.and(new Sort(Direction.ASC,"id")));
+		return  repository.findByTimeAfterAndUserId(date1, userId, pageRequest);
+	}
+		public Page<TdBill> findByTimeAfterAndStatusIdAndUserId(Date date1, Long statusId, Long userId, int page , int size){
+			PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "time").and(new Sort(Direction.DESC, "finishTime"))
+					.and(new Sort(Direction.ASC,"id")));
+			return  repository.findByTimeAfterAndStatusIdAndUserId(date1, statusId, userId, pageRequest);
+	}
+		
+		public Page<TdBill> findByTimeAfterAndTimeBeforeAndUserId(Date date1, Date date2, Long userId, int page , int size){
+			PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "time").and(new Sort(Direction.DESC, "finishTime"))
+					.and(new Sort(Direction.ASC,"id")));
+			return  repository.findByTimeAfterAndTimeBeforeAndUserId(date1, date2, userId, pageRequest);
+	}
+		
+		public Page<TdBill> findByTimeAfterAndTimeBeforeAndStatusIdAndUserId(Date date1, Date date2, Long statusId, Long userId, int page , int size){
+			PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "time").and(new Sort(Direction.DESC, "finishTime"))
+					.and(new Sort(Direction.ASC,"id")));
+			return  repository.findByTimeAfterAndTimeBeforeAndStatusIdAndUserId(date1, date2, statusId,userId, pageRequest);
+	}
 }

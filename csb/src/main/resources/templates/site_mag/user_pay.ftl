@@ -156,14 +156,19 @@ function del_goods_gift(obj) {
 <!--/导航栏-->
 
 <!--内容-->
+
+<div style="margin: 10px 0 10px 15px;font-size: 1.5em;height:32px;line-height:32px;" >
+<span style="height:32px;line-height:32px;"><img src="/client/images/about_icon05.png" style="width:32px;height:32px;"/></span>
+<span>税费扣缴</span>
+</div>
+
 <div class="content-tab-wrap">
   <div id="floatHead" class="content-tab" style="position: static; top: 52px;">
     <div class="content-tab-ul-wrap">
       <ul>
           <li><a href="javascript:;" onclick="tabs(this);" class="selected menu">基本资料</a></li>
-          <li><a href="javascript:;" onclick="tabs(this);" class="">财务状况</a></li>
-          <li><a href="javascript:;" onclick="tabs(this);" class="">税金状况</a></li>
-          <li><a href="javascript:;" onclick="tabs(this);" class="">账面存货</a></li>
+          <li><a href="javascript:;" onclick="tabs(this);" class="">会计代理费</a></li>
+          <li><a href="javascript:;" onclick="tabs(this);" class="">其他费用</a></li>
           <li><a href="javascript:;" onclick="tabs(this);" class="">备注</a></li>
       </ul>
     </div>
@@ -172,18 +177,18 @@ function del_goods_gift(obj) {
 
 
 <!--基本资料-->
-<form name="bill_deal" method="post" action="/Verwalter/bill/finance/save" id="bill_deal">
+<form name="bill_deal" method="post" action="/Verwalter/user/pay/save" id="bill_deal">
 
 <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="${__VIEWSTATE!""}" >
 <input type="hidden" name="userId" value="<#if user??>${user.id?c!""}</#if>" >
-<input type="hidden" name="id" value="<#if tdFinance??>${tdFinance.id?c!""}</#if>" >
+<input type="hidden" name="id" value="<#if pay??>${pay.id?c!""}</#if>" >
 <input type="hidden" name="billId" value="<#if bill??>${bill.id?c!""}</#if>" >
 <div class="tab-content" style="display: block;">
         <dl>
          <dt>发布月份</dt>
          <dd>
              <div class="input-date"  style="width: 240px;">
-                 <input name="time" type="text" id="time" value="<#if gather??&&gather.time??>${gather.time?string("yyyy-MM")}<#elseif date??>${date?string("yyyy-MM")}</#if>" class="input date"  onfocus="WdatePicker({dateFmt:'yyyy-MM',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" "  onchange="javascript:selectDate(this.value);">
+                 <input name="time" type="text" id="time" value="<#if pay??&&pay.time??>${pay.time?string("yyyy-MM")}<#elseif date??>${date?string("yyyy-MM")}</#if>" class="input date"  onfocus="WdatePicker({dateFmt:'yyyy-MM',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" "  onchange="javascript:selectDate(this.value);">
                  <i  style="right: 70px;">日期</i>
              </div>
              <#--<span class="Validform_checktip">不选择默认当前时间</span>-->
@@ -201,18 +206,10 @@ function del_goods_gift(obj) {
        <dt>公司名称：</dt>
        <dd><#if user??>${user.enterName!''}</#if></dd>
     </dl>   
-    <#if bill??> 
-    <dl>
-    <dt>票据</dt>
-    <dd>
-        <img src="<#if bill.imgUrl??&&bill.imgUrl != "">/images/${bill.imgUrl!""} <#else>/client/images/foote22.png</#if>"  />
-    </dd>
-  </dl>
-  <dl>
-    <dt>票据下载</dt>
-    <dd><a href="/download/data?name=${bill.imgUrl!''}">${bill.imgUrl!''}</a></dd>
-  </dl>
-  </#if>
+        <dl>
+       <dt>公司类型：</dt>
+       <dd>${enterType!''}</dd>
+    </dl>   
 	<dl>
 	    <dt>排序数字</dt>
 	    <dd>

@@ -1,9 +1,11 @@
 package com.ynyes.csb.controller.management;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -14,6 +16,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,6 +55,7 @@ import com.ynyes.csb.entity.TdUser;
 import com.ynyes.csb.service.TdArticleService;
 import com.ynyes.csb.service.TdBillService;
 import com.ynyes.csb.service.TdBillTypeService;
+import com.ynyes.csb.service.TdEnterTypeService;
 import com.ynyes.csb.service.TdFinanceService;
 import com.ynyes.csb.service.TdGatherService;
 import com.ynyes.csb.service.TdManagerLogService;
@@ -63,7 +68,7 @@ import com.ynyes.csb.util.SiteMagConstant;
  * 后台首页控制器
  * 
  * @author Sharon
- */
+ */ 
 
 @Controller
 @RequestMapping(value="/Verwalter/bill")
@@ -89,7 +94,62 @@ public class TdManagerBillController {
 	@Autowired
 	TdPayService tdPayService;
 	
-	 @RequestMapping(value="/list/{statusId}")
+	@Autowired
+	TdEnterTypeService tdEnterTypeService;
+	
+	@RequestMapping(value="/list/{statusId}")
+    public String billList(Integer page,
+                          Integer size,
+                          @PathVariable Long statusId,
+                          ModelMap map,
+                          HttpServletRequest req) throws ParseException{
+        String username = (String) req.getSession().getAttribute("manager");
+        if (null == username) {
+            return "redirect:/Verwalter/login";
+        }
+        
+        if (null == page || page < 0)
+        {
+            page = 0;
+        }
+        
+        if (null == size || size <= 0)
+        {
+            size = SiteMagConstant.pageSize;;
+        }
+
+
+		Page<TdBill> billPage = null;
+		if(null == statusId)
+		{
+			billPage = tdBillService.findAll(page , size);
+		}
+		else{
+			billPage = tdBillService.findByStatusId(statusId, page, size);
+		}
+
+		
+		map.addAttribute("billType_list", tdBillTypeService.findByIsEnableTrueOrderBySortIdAsc());
+		map.addAttribute("statusId",statusId);
+
+		map.addAttribute("bill_page", billPage);
+		for (TdBill item : billPage.getContent()) {
+			TdUser user = tdUserService.findOne(item.getUserId());
+			if (null != user) {
+				map.addAttribute("user_" + item.getId(), user);
+			}
+			TdBillType billType = tdBillTypeService.findOne(item.getBillTypeId());
+			if(null != billType)
+			{
+				map.addAttribute("billType_" + item.getId(), billType.getTitle());
+			}
+		}
+		
+        
+        return "/site_mag/bill_list";
+    }
+	
+	 @RequestMapping(value="/list/{statusId}",method = RequestMethod.POST)
 	    public String billList(Integer page,
 	                          Integer size,
 	                          Long billTypeId,
@@ -473,7 +533,60 @@ public class TdManagerBillController {
 	    }
 	 
 	//票据整理 用户列表 2016年1月10日 02:04:27
-	    @RequestMapping(value="/user/list")
+	 @RequestMapping(value="/user/list")
+	    public String UserList(Integer page,
+	                          Integer size,
+	                          ModelMap map,
+	                          HttpServletRequest req){
+	        String username = (String) req.getSession().getAttribute("manager");
+	        if (null == username) {
+	            return "redirect:/Verwalter/login";
+	        }
+	        if (null == page || page < 0)
+	        {
+	            page = 0;
+	        }
+	        
+	        if (null == size || size <= 0)
+	        {
+	            size = SiteMagConstant.pageSize;
+	        }
+	        
+	        map.addAttribute("page", page);
+	        map.addAttribute("size", size);
+
+	        Page<TdUser> userPage = null;
+	            userPage = tdUserService.findAllOrderBySortIdAsc(page, size);
+	        
+	        if(null != userPage)
+	        {
+	        	for(TdUser item : userPage)
+	        	{
+	        		List<TdBill> billList = tdBillService.findByUserId(item.getId());
+	        		if(null != billList)
+	        		{
+	        			map.addAttribute("billAmount_"+item.getId(), billList.size());
+	        		}
+	        		List<TdBill> todo = tdBillService.findByStatusIdAndUserId(2L,item.getId());
+	        		if(null != todo)
+	        		{
+	        			map.addAttribute("todo_"+item.getId(), todo.size());
+	        		}
+	        		List<TdPay> pay = tdPayService.findByUserIdAndIsPaidFalse(item.getId());
+	        		if(null != pay)
+	        		{
+	        			map.addAttribute("pay_"+item.getId(), pay.size());
+	        		}
+	        	}
+	        }
+
+	        
+	        map.addAttribute("user_page", userPage);
+	        
+	        return "/site_mag/user_list_bill";
+	    }
+	 
+	    @RequestMapping(value="/user/list",method = RequestMethod.POST)
 	    public String billUserList(Integer page,
 	                          Integer size,
 	                          String keywords,
@@ -483,7 +596,8 @@ public class TdManagerBillController {
 	                          Long[] listId,
 	                          Integer[] listChkId,
 	                          ModelMap map,
-	                          HttpServletRequest req){
+	                          HttpServletResponse resp,
+	                          HttpServletRequest req) throws IOException{
 	        String username = (String) req.getSession().getAttribute("manager");
 	        if (null == username) {
 	            return "redirect:/Verwalter/login";
@@ -497,6 +611,10 @@ public class TdManagerBillController {
 	                    page = Integer.parseInt(__EVENTARGUMENT);
 	                } 
 	            }
+	            else if (__EVENTTARGET.equalsIgnoreCase("btnDownload"))
+	            {
+	            	btnZipUser(listId, listChkId , resp, req);
+	            }
 	        }
 	        
 	        if (null == page || page < 0)
@@ -506,7 +624,7 @@ public class TdManagerBillController {
 	        
 	        if (null == size || size <= 0)
 	        {
-	            size = SiteMagConstant.pageSize;;
+	            size = SiteMagConstant.pageSize;
 	        }
 	        
 	        if (null != keywords)
@@ -560,7 +678,311 @@ public class TdManagerBillController {
 	        return "/site_mag/user_list_bill";
 	    }
 	    
+	    //票据整理 单个角色票据页面
+	    @RequestMapping(value="/user/billList/{userId}")
+	    public String BillListDetail(Integer page,
+	                          Integer size,
+	                          @PathVariable Long userId,
+	                          ModelMap map,
+	                          HttpServletResponse resp,
+	                          HttpServletRequest req) throws ParseException, IOException{
+	        String username = (String) req.getSession().getAttribute("manager");
+	        if (null == username) {
+	            return "redirect:/Verwalter/login";
+	        }
+	        
+	        if (null == page || page < 0)
+	        {
+	            page = 0;
+	        }
+	        
+	        if (null == size || size <= 0)
+	        {
+	            size = SiteMagConstant.pageSize;;
+	        }
+
+	        map.addAttribute("page", page);
+	        map.addAttribute("size", size);
+
+			Page<TdBill> billPage = null;
+			
+			//开始筛选 zhangji
+			if (null == userId)
+			{
+				billPage = tdBillService.findByUserId( userId, page , size);
+			}
+			else{				
+				billPage = tdBillService.findAll( page , size);
+			}
+			
+			if (null != userId)
+			{
+				TdUser user = tdUserService.findOne(userId);
+				map.addAttribute("user", user);
+				map.addAttribute("enterType", tdEnterTypeService.findOne(user.getEnterTypeId()).getTitle());
+			}
+			map.addAttribute("billType_list", tdBillTypeService.findByIsEnableTrueOrderBySortIdAsc());
+			map.addAttribute("userId",userId);
+			map.addAttribute("user", tdUserService.findOne(userId));
+
+			map.addAttribute("bill_page", billPage);
+			for (TdBill item : billPage.getContent()) {
+				TdUser user = tdUserService.findOne(item.getUserId());
+				if (null != user) {
+					map.addAttribute("user_" + item.getId(), user);
+				}
+				TdBillType billType = tdBillTypeService.findOne(item.getBillTypeId());
+				if(null != billType)
+				{
+					map.addAttribute("billType_" + item.getId(), billType.getTitle());
+				}
+			}
+	        
+	        return "/site_mag/bill_user_billList";
+	    }
+    
 	    
+		 @RequestMapping(value="/user/billList/{userId}", method = RequestMethod.POST)
+		    public String billListDetail(Integer page,
+		                          Integer size,
+		                          @PathVariable Long userId,
+		                          String date_1,  
+			            		  String date_2,
+		                          Long statusId,
+		                          String __EVENTTARGET,
+		                          String __EVENTARGUMENT,
+		                          String __VIEWSTATE,
+		                          Long[] listId,
+		                          Integer[] listChkId,
+		                          ModelMap map,
+		                          HttpServletResponse resp,
+		                          HttpServletRequest req) throws ParseException, IOException{
+		        String username = (String) req.getSession().getAttribute("manager");
+		        if (null == username) {
+		            return "redirect:/Verwalter/login";
+		        }
+		        if (null != __EVENTTARGET)
+		        {
+		            if (__EVENTTARGET.equalsIgnoreCase("btnPage"))
+		            {
+		                if (null != __EVENTARGUMENT)
+		                {
+		                    page = Integer.parseInt(__EVENTARGUMENT);
+		                } 
+		            }
+		            else if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
+		            {
+		                btnDelete(listId, listChkId);
+		                tdManagerLogService.addLog("delete", "删除票据", req);
+		            }
+		            else if (__EVENTTARGET.equalsIgnoreCase("btnDownload"))
+		            {
+		            	btnZip(listId, listChkId , userId, resp, req);
+		            }
+		        }
+		        
+		        if (null == page || page < 0)
+		        {
+		            page = 0;
+		        }
+		        
+		        if (null == size || size <= 0)
+		        {
+		            size = SiteMagConstant.pageSize;;
+		        }
+
+		        map.addAttribute("page", page);
+		        map.addAttribute("size", size);
+		        map.addAttribute("statusId", statusId);
+		        map.addAttribute("__EVENTTARGET", __EVENTTARGET);
+		        map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
+		        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+
+
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				Date date1 = null;
+				Date date2 = null;
+				if(null !=date_1 && !date_1.equals(""))
+				{
+					date1 = sdf.parse(date_1);
+				}
+				if(null !=date_2 && !date_2.equals(""))
+				{
+					date2 = sdf.parse(date_2);
+				}
+				Page<TdBill> billPage = null;
+				
+				//开始筛选 zhangji
+				if (null == userId ) {
+					if(null == date1)
+					{
+						if(null == date2)
+						{
+							if(null == statusId)
+							{
+								billPage = tdBillService.findAll(page , size);
+							}
+							else{
+								billPage = tdBillService.findByStatusId(statusId, page, size);
+							}
+						}
+						else{
+							if(null == statusId)
+							{
+								billPage = tdBillService.findByTimeBefore(date2, page, size);
+							}
+							else{
+								billPage = tdBillService.findByTimeBeforeAndStatusId(date2,statusId, page, size);
+							}
+						}
+						
+					}
+					else{
+						if(null == date2)
+						{
+							if(null == statusId)
+							{
+								billPage = tdBillService.findByTimeAfter(date1, page, size);
+							}
+							else{
+								billPage = tdBillService.findByTimeAfterAndStatusId(date1,statusId, page, size);
+							}
+						}
+						else{
+							if(null == statusId)
+							{
+								billPage = tdBillService.findByTimeAfterAndTimeBefore(date1, date2, page, size);
+							}
+							else{
+								billPage = tdBillService.findByTimeAfterAndTimeBeforeAndStatusId(date1,date2,statusId, page, size);
+							}
+						}
+					}
+				}
+				else{
+					if(null == date1)
+					{
+						if(null == date2)
+						{
+							if(null == statusId)
+							{
+								billPage = tdBillService.findByUserId(userId,  page, size);
+							}
+							else{
+								billPage = tdBillService.findByStatusIdAndUserId(statusId, userId,  page, size);
+							}
+						}
+						else{
+							if(null == statusId)
+							{
+								billPage = tdBillService.findByTimeBeforeAndUserId(date2, userId,  page, size);
+							}
+							else{
+								billPage = tdBillService.findByTimeBeforeAndStatusIdAndUserId(date2, statusId, userId,  page, size);
+							}
+						}
+					}
+					else{
+						if(null == date2)
+						{
+							if(null == statusId)
+							{
+								billPage = tdBillService.findByTimeAfterAndUserId(date1, userId,  page, size);
+							}
+							else{
+								billPage = tdBillService.findByTimeAfterAndStatusIdAndUserId(date1, statusId, userId,  page, size);
+							}
+						}
+						else{
+							if(null == statusId)
+							{
+								billPage = tdBillService.findByTimeAfterAndTimeBeforeAndUserId(date1, date2, userId,  page, size);
+							}
+							else{
+								billPage = tdBillService.findByTimeAfterAndTimeBeforeAndStatusIdAndUserId(date1, date2, statusId, userId,  page, size);
+							}
+						}
+					}
+				}
+				
+				if (null != userId)
+				{
+					TdUser user = tdUserService.findOne(userId);
+					map.addAttribute("user", user);
+					map.addAttribute("enterType", tdEnterTypeService.findOne(user.getEnterTypeId()).getTitle());
+				}
+				map.addAttribute("billType_list", tdBillTypeService.findByIsEnableTrueOrderBySortIdAsc());
+				map.addAttribute("date_1",date_1);
+				map.addAttribute("date_2",date_2);
+				map.addAttribute("userId",userId);
+				map.addAttribute("user", tdUserService.findOne(userId));
+				map.addAttribute("statusId",statusId);
+
+				map.addAttribute("bill_page", billPage);
+				for (TdBill item : billPage.getContent()) {
+					TdUser user = tdUserService.findOne(item.getUserId());
+					if (null != user) {
+						map.addAttribute("user_" + item.getId(), user);
+					}
+					TdBillType billType = tdBillTypeService.findOne(item.getBillTypeId());
+					if(null != billType)
+					{
+						map.addAttribute("billType_" + item.getId(), billType.getTitle());
+					}
+				}
+		        
+		        return "/site_mag/bill_user_billList";
+		    }
+		 
+		 
+		  //票据整理 单个角色票据页面
+		    @RequestMapping(value="/finance/list/{time}")
+		    public String financeList(Integer page,
+		                          Integer size,
+		                          @PathVariable String time,
+		                          ModelMap map,
+		                          HttpServletResponse resp,
+		                          HttpServletRequest req) throws ParseException, IOException{
+		        String username = (String) req.getSession().getAttribute("manager");
+		        if (null == username) {
+		            return "redirect:/Verwalter/login";
+		        }
+		        
+		        if (null == page || page < 0)
+		        {
+		            page = 0;
+		        }
+		        
+		        if (null == size || size <= 0)
+		        {
+		            size = SiteMagConstant.pageSize;;
+		        }
+		        
+		        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+		        Date date = new Date();
+		        if (null != time)
+		        {
+		        	date =sdf.parse(time);
+		        }
+
+		        map.addAttribute("page", page);
+		        map.addAttribute("size", size);
+
+				Page<TdFinance> tdFinance = tdFinanceService.findByTime(date, page , size);
+				for (TdFinance item : tdFinance.getContent())
+				{
+					TdUser tdUser = tdUserService.findOne(item.getUserId());
+					if (null != tdUser)
+					{
+						map.addAttribute("user_"+item.getId(), tdUser);
+					}
+				}
+		        
+		        return "/site_mag/bill_finance_list";
+		    }
+		 
+		 
+		 
 	  //财务管理，人工处理
 		 @RequestMapping(value="/finance/edit")
 		    public String financeEdit( Long billId,
@@ -775,5 +1197,195 @@ public class TdManagerBillController {
 	            }
 	        }
 	    }
+	/*批量下载 试试----------------- */
+	 //把一个用户的票据打包
+	    public void btnZip( Long[] ids, Integer[] chkIds, Long userId,
+                HttpServletResponse resp,
+                HttpServletRequest req) throws IOException {
+	    	String filepath = SiteMagConstant.imagePath;	
+	    	req.setCharacterEncoding("UTF-8");
+	    	
+	    	
+	        if (null == ids || null == chkIds
+	                || ids.length < 1 || chkIds.length < 1 )
+	        {
+	            return;
+	        }
+        TdUser user = tdUserService.findOne(userId);
+	        
+        byte[] buffer = new byte[1024];
+        
+        //生成的ZIP文件名为Demo.zip
+        String strZipName = "Demo.zip";
+        File zipfile = new File(filepath +"/" + strZipName);
+        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipfile));
+        
+        for (int chkId : chkIds)
+        {
+            if (chkId >=0 && ids.length > chkId)
+            {
+	                Long id = ids[chkId];
+	                
+	                String name = tdBillService.findOne(id).getImgUrl();
+	                
+	                File file = new File(filepath +"/" + name);
+	         	FileInputStream fis = new FileInputStream(file);
+	         	String ext = name.substring(name.lastIndexOf("."));
+	 	        out.putNextEntry(new ZipEntry(user.getUsername()+"_票据"+user.getNumber()+"_"+id+ext));
+	 	        
+	 	       resp.reset();
+               resp.setHeader("Content-Disposition", "attachment; filename="
+                       + name);
+               resp.setContentType("application/octet-stream; charset=utf-8");
+	 	
+	 	        int len;
+	 	
+	 	        //读入需要下载的文件的内容，打包到zip文件
+	 	
+	 	       while((len = fis.read(buffer))>0) {
+	 	
+	 	        out.write(buffer,0,len);
 	
+	        }
+
+	         out.closeEntry();
+
+         fis.close();
+            }
+        }
+
+        out.close();
+        btnDownload(zipfile, strZipName,userId,resp,req);
+    }
+	    
+	    //把多个用户的票据打包，每个用户建一个文件夹
+	    public void btnZipUser( Long[] ids, Integer[] chkIds, 
+                HttpServletResponse resp,
+                HttpServletRequest req) throws IOException {
+	    	String filepath = SiteMagConstant.imagePath;	
+	    	req.setCharacterEncoding("UTF-8");
+	    	
+	        if (null == ids || null == chkIds
+	                || ids.length < 1 || chkIds.length < 1 )
+	        {
+	            return;
+	        }
+        
+        byte[] buffer = new byte[1024];
+        
+        //生成的ZIP文件名为Demo.zip
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月");
+        String date = sdf.format(new Date());
+        String strZipName =  "财税宝用户票据"+date+".zip";
+        File zipfile = new File(filepath +"/" + strZipName);
+        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipfile));
+        int len;
+        for (int chkId : chkIds)
+        {
+            if (chkId >=0 && ids.length > chkId)
+            {
+	                Long id = ids[chkId];
+	                TdUser user = tdUserService.findOne(id);
+//	                //每个用户建一个文件夹
+//                	File userfile =new File(filepath +"/" + URLEncoder.encode(user.getEnterName(), "UTF-8"));    
+//                	//如果文件夹不存在则创建    
+//                	if  (!userfile .exists()  && !userfile .isDirectory())      
+//                	{       
+//                	    System.out.println("//不存在");  
+//                	    userfile .mkdir();    
+//                	} else   
+//                	{  
+//                	    System.out.println("//目录存在");  
+//                	} 
+                	
+	                List<TdBill> billList = tdBillService.findByStatusIdAndUserId(2L, user.getId());
+	                for (TdBill item : billList)
+	                {
+	                	
+	                	String name = item.getImgUrl();
+	                	File file = new File(filepath +"/" + name);
+//	                	File filefis = new File(filepath +"/" + name);
+//	                	File filefos = new File(userfile +"/" + name);
+//	              
+//	                	FileInputStream filein = new FileInputStream(filefis);   //源文件存放路径
+//	                	FileOutputStream fileout = new FileOutputStream(filefos);  //目标路径
+//    	    		 	
+//    		 	       
+//    		 	       while((len = filein.read(buffer))>0) {
+//    		 	    	  fileout.write(buffer,0,len);
+//    		 	       }
+//    		 	      filein.close();
+//    		 	      fileout.close();
+	                	
+	                	 //读入需要下载的文件的内容，打包到zip文件
+	                	String ext = name.substring(name.lastIndexOf("."));
+    		 	     out.putNextEntry(new ZipEntry(user.getEnterName()+"_票据"+user.getNumber()+"_"+item.getId()+ext));
+	               
+    	 	        
+    		 	       resp.reset();
+    	               resp.setHeader("Content-Disposition", "attachment; filename="
+    	                       + URLEncoder.encode(user.getEnterName(), "UTF-8"));
+    	               resp.setContentType("application/octet-stream; charset=utf-8");
+    	               
+ 	               FileInputStream fis = new FileInputStream(file);
+ 		 	        //读入需要下载的文件的内容，打包到zip文件
+ 		 	
+ 		 	       while((len = fis.read(buffer))>0) {
+ 		 	
+ 		 	        out.write(buffer,0,len);
+             }
+	               
+ 			         out.closeEntry();
+
+ 			         fis.close();
+	                }
+            }
+            
+        }
+
+        out.close();
+        btnDownload(zipfile, strZipName,null,resp,req);
+    }
+	    
+	  //下载打包文件
+	    public void btnDownload( File zipfile, String strZipName, Long userId,
+	    		 HttpServletResponse resp,
+	                HttpServletRequest req) throws IOException {
+		    	req.setCharacterEncoding("UTF-8");
+        OutputStream os = resp.getOutputStream();  
+        String downloadName = strZipName;
+        if(null != userId)
+        {
+    		TdUser user =tdUserService.findOne(userId);
+    		if(null != user)
+    		{
+    			 String ext = strZipName.substring(strZipName.lastIndexOf("."));
+//    			SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月");
+    			downloadName = user.getEnterName()+"票据_"+user.getNumber()+ext;
+    		}
+        }
+        
+        if (zipfile.exists())
+        {
+            try {
+                resp.reset();
+                resp.setHeader("Content-Disposition", "attachment; filename="
+                		+URLEncoder.encode(downloadName, "UTF-8"));
+                resp.setContentType("application/octet-stream; charset=utf-8");
+                os.write(FileUtils.readFileToByteArray(zipfile));
+                os.flush();
+            } finally {
+                if (os != null) {
+                    os.close();
+                }
+            }
+            zipfile.delete();
+        }
+        else 
+        {
+        	return;
+        }
+	 }
+	 /*    --------------------批量下载--*/
+	 
 }

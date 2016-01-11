@@ -12,7 +12,7 @@
 </head>
 
 <body class="mainbody"><div class="" style="left: 0px; top: 0px; visibility: hidden; position: absolute;"><table class="ui_border"><tbody><tr><td class="ui_lt"></td><td class="ui_t"></td><td class="ui_rt"></td></tr><tr><td class="ui_l"></td><td class="ui_c"><div class="ui_inner"><table class="ui_dialog"><tbody><tr><td colspan="2"><div class="ui_title_bar"><div class="ui_title" unselectable="on" style="cursor: move;"></div><div class="ui_title_buttons"><a class="ui_min" href="javascript:void(0);" title="最小化" style="display: inline-block;"><b class="ui_min_b"></b></a><a class="ui_max" href="javascript:void(0);" title="最大化" style="display: inline-block;"><b class="ui_max_b"></b></a><a class="ui_res" href="javascript:void(0);" title="还原"><b class="ui_res_b"></b><b class="ui_res_t"></b></a><a class="ui_close" href="javascript:void(0);" title="关闭(esc键)" style="display: inline-block;">×</a></div></div></td></tr><tr><td class="ui_icon" style="display: none;"></td><td class="ui_main" style="width: auto; height: auto;"><div class="ui_content" style="padding: 10px;"></div></td></tr><tr><td colspan="2"><div class="ui_buttons" style="display: none;"></div></td></tr></tbody></table></div></td><td class="ui_r"></td></tr><tr><td class="ui_lb"></td><td class="ui_b"></td><td class="ui_rb" style="cursor: se-resize;"></td></tr></tbody></table></div>
-<form name="form1" method="post" action="/Verwalter/bill/list/<#if statusId??>${statusId!""}</#if>" id="form1">
+<form name="form1" method="post" action="/Verwalter/bill/user/billList/<#if userId??>${userId?c!""}</#if>" id="form1">
 <div>
 <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="${__EVENTTARGET!""}">
 <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="${__EVENTARGUMENT!""}">
@@ -49,6 +49,7 @@ var theForm = document.forms['form1'];
     <div class="l-list">
       <ul class="icon-list">
         <li><a class="all" href="javascript:;" onclick="checkAll(this);"><i></i><span>全选</span></a></li>
+        <li><a  id="btnDownload" class="del" href="javascript:__doPostBack('btnDownload','')"><i></i><span>批量下载票据</span></a></li>
         <#if tdManagerRole?? && tdManagerRole.isSys>
         <li><a onclick="return ExePostBack('btnDelete');" id="btnDelete" class="del" href="javascript:__doPostBack('btnDelete','')"><i></i><span>删除</span></a></li>
         </#if>
@@ -68,13 +69,14 @@ var theForm = document.forms['form1'];
 		      </div>			   
 		      
 		<div class="rule-single-select single-select">
-            <select name="billTypeId" onchange="javascript:__doPostBack('','')" id="ddlbillTypeId" style="display: none;">
-                <option <#if billTypeId??><#else>selected="selected"</#if> value="">所有票据类别</option>
-                <#if billType_list??>
-                    <#list billType_list as c>
-                        <option value="${c.id!""}" <#if billTypeId?? && c.id==billTypeId>selected="selected"</#if> >${c.title!""}</option>
-                    </#list>
-                </#if>
+            <select name="statusId" onchange="javascript:__doPostBack('','')" id="statusId" style="display: none;">
+                <option <#if statusId??><#else>selected="selected"</#if> value="">所有进度状态</option>
+                <option value="2" <#if statusId?? && 2==statusId>selected="selected"</#if> >用户上传完成</option>
+                <option value="3" <#if statusId?? && 3==statusId>selected="selected"</#if> >票据整理</option>
+                <option value="4" <#if statusId?? && 4==statusId>selected="selected"</#if> >财务处理</option>
+                <option value="5" <#if statusId?? && 5==statusId>selected="selected"</#if> >税费扣缴</option>
+                <option value="6" <#if statusId?? && 6==statusId>selected="selected"</#if> >财务状况表</option>
+              
             </select>
         </div>
            
@@ -87,18 +89,35 @@ var theForm = document.forms['form1'];
   </div>
 </div>
 <!--/工具栏-->
-
+<!--标题（用户信息）-->
+<div class="tab-content"  style="display:block;padding:0;">  
+    <dl>
+	    <dd style="margin-left:20px;">
+	    	<b>用户编号：</b>
+	        <span style="width:150px;"><#if user??>${user.number!''}</#if>  </span>
+	        <b style="margin-left:30px;">用户名：</b>
+	        <span style="width:150px;"><#if user??>${user.username!''}</#if> </span> 
+	        <b style="margin-left:30px;">公司名称：</b>
+	        <span style="width:150px;"><#if user??>${user.enterName!''}</#if> </span> 
+	        <b style="margin-left:30px;">公司类型：</b>
+	        <span style="width:150px;"><#if enterType??>${enterType!''}</#if></span> 
+	        <b style="margin-left:30px;">联系人姓名：</b>
+	        <span style="width:150px;"><#if user??>${user.realName!''}</#if></span>
+	        <b style="margin-left:30px;">联系人电话：</b>
+	        <span style="width:150px;"><#if user??>${user.mobile!''}</#if></span>
+	    </dd>
+    </dl>
+</div>
+<!-- /标题（用户信息）-->
 <!--列表-->
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ltable">
   <tbody>
   <tr class="odd_bg">
     <th width="4%">选择</th>
-    <th width="6%">票据</th>
-    <th width="12%">用户名</th>
-    <th width="6%">用户编号</th>
-    <th width="8%">联系人姓名</th>
-    <th width="8%">联系人电话</th>
+    <th width="10%">票据</th>
+    <th width="10%">下载</th>
+    <th width="10%">票据类型</th>
     <th width="8%">上传时间</th>
     <th width="8%">处理进度</th>
     <th width="6%">操作</th>
@@ -113,19 +132,16 @@ var theForm = document.forms['form1'];
                     <input type="hidden" name="listId" id="listId" value="${item.id}">
                 </td>
                 <td align="center"><img src="<#if item.imgUrl??&&item.imgUrl != "">/images/${item.imgUrl!""} <#else>/client/images/foote22.png</#if>" width=50 height=50 /></td>
-                <#if ("user_" + item.id)?eval??>
-        		<#assign user = ("user_" + item.id)?eval>
+                <td align="center"><a href="/download/bill/${item.id?c}?name=${item.imgUrl!''}" >${item.imgUrl!''}</a></td>
                 <td align="center">
-                		<a href="/Verwalter/bill/edit?id=${item.id}&roleId=${roleId!""}">${user.username!''}</a>
+                	<#if billType_list??>
+                		<#list billType_list as type>
+                			<#if item.billTypeId??&&type.id == item.billTypeId>
+                				${type.title!''}
+                			</#if>
+                		</#list>
+                	</#if>			
                 </td>
-                <td align="center">${user.number!""}</td>
-                <td align="center">${user.realName!""}</td>
-                <td align="center">${user.mobile!""}</td>
-                <#else>
-                <td align="center"></td>
-                <td align="center"></td>
-                <td align="center"></td>
-                </#if>	
                 <td align="center"><#if item.time??>${item.time?string("yyyy年MM月dd日 HH:mm:ss")}</#if></td>
                 <#--<td align="center"><#if user.statusId??><#if user.statusId==0>待审核<#elseif user.statusId==1>正常</#if></#if></td>-->
                 <td align="center">

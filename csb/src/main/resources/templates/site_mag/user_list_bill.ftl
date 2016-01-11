@@ -11,7 +11,7 @@
 </head>
 
 <body class="mainbody"><div class="" style="left: 0px; top: 0px; visibility: hidden; position: absolute;"><table class="ui_border"><tbody><tr><td class="ui_lt"></td><td class="ui_t"></td><td class="ui_rt"></td></tr><tr><td class="ui_l"></td><td class="ui_c"><div class="ui_inner"><table class="ui_dialog"><tbody><tr><td colspan="2"><div class="ui_title_bar"><div class="ui_title" unselectable="on" style="cursor: move;"></div><div class="ui_title_buttons"><a class="ui_min" href="javascript:void(0);" title="最小化" style="display: inline-block;"><b class="ui_min_b"></b></a><a class="ui_max" href="javascript:void(0);" title="最大化" style="display: inline-block;"><b class="ui_max_b"></b></a><a class="ui_res" href="javascript:void(0);" title="还原"><b class="ui_res_b"></b><b class="ui_res_t"></b></a><a class="ui_close" href="javascript:void(0);" title="关闭(esc键)" style="display: inline-block;">×</a></div></div></td></tr><tr><td class="ui_icon" style="display: none;"></td><td class="ui_main" style="width: auto; height: auto;"><div class="ui_content" style="padding: 10px;"></div></td></tr><tr><td colspan="2"><div class="ui_buttons" style="display: none;"></div></td></tr></tbody></table></div></td><td class="ui_r"></td></tr><tr><td class="ui_lb"></td><td class="ui_b"></td><td class="ui_rb" style="cursor: se-resize;"></td></tr></tbody></table></div>
-<form name="form1" method="post" action="/Verwalter/user/list" id="form1">
+<form name="form1" method="post" action="/Verwalter/bill/user/list" id="form1">
 <div>
 <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="${__EVENTTARGET!""}">
 <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="${__EVENTARGUMENT!""}">
@@ -51,6 +51,13 @@ var theForm = document.forms['form1'];
 <!--工具栏-->
 <div class="toolbar-wrap">
   <div id="floatHead" class="toolbar" style="position: static; top: 42px;">
+      <div class="l-list">
+      <ul class="icon-list">
+        <li><a class="all" href="javascript:;" onclick="checkAll(this);"><i></i><span>全选</span></a></li>
+        <li><a class="del" href="javascript:__doPostBack('btnDownload','')"><i></i><span>批量下载未处理票据</span></a></li>
+        <#--<li><a onclick="return ExePostBack('btnDelete');" id="btnDelete" class="del" href="javascript:__doPostBack('btnDelete','')"><i></i><span>删除</span></a></li>-->
+      </ul>
+    </div>
     <div class="r-list">
       <input name="keywords" type="text" class="keyword" value="${keywords!""}">
       <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
@@ -137,6 +144,7 @@ var theForm = document.forms['form1'];
 
                 <#--<td align="center"><#if user.statusId??><#if user.statusId==0>待审核<#elseif user.statusId==1>正常</#if></#if></td>-->
                 <td align="center">
+					<a href="/Verwalter/bill/user/billList/${user.id}">票据列表</a>&nbsp;| 
                     <a href="/Verwalter/bill/finance/edit?userId=${user.id}">处理财务</a>&nbsp;| 
                     <a href="/Verwalter/user/pay?id=${user.id}">税费扣缴</a></td>
                     <#--<a href="/Verwalter/user/role?id=${user.id}">进入</a></td>-->

@@ -365,11 +365,15 @@ public class TdUserController {
 	public String apply(ModelMap map,  HttpServletRequest req) {
 		tdCommonService.setHeader(map, req); 
 		String username = (String) req.getSession().getAttribute("username");
-		if (null == username) {
-			return "redirect:/login";
-		}
+//		if (null == username) {
+//			return "redirect:/login";
+//		}
 		TdUser user = tdUserService.findByUsernameAndIsEnabled(username);
-		map.addAttribute("user", user);
+		if (null != user)
+		{
+			map.addAttribute("user", user);
+		}
+		
 		
 		//业务类型
 		List<TdApplyType> applyTypeList = tdApplyTypeService.findByIsEnableTrueOrderBySortIdAsc();
@@ -378,7 +382,7 @@ public class TdUserController {
 		return "client/apply_index";
 	}
 	
-	//新办公司
+	//填写信息
 	@RequestMapping(value = "/apply/edit/{applyTypeId}")
 	public String applyMake(@PathVariable Long applyTypeId, ModelMap map,  HttpServletRequest req) {
 		tdCommonService.setHeader(map, req); 

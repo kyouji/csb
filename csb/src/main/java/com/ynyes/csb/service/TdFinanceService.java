@@ -128,7 +128,12 @@ public class TdFinanceService {
         return repository.findAll(pageRequest);
     }
     
-
+    public Page<TdFinance> findByTime(Date time, int page, int size)
+    {
+        PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.ASC, "sortId").and(new Sort(Direction.ASC, "userId")));
+        
+        return repository.findByTime(time, pageRequest);
+    }
     
     /**
      * 保存

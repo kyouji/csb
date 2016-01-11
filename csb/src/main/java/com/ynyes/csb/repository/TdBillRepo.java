@@ -57,5 +57,16 @@ public interface TdBillRepo extends
   	Page<TdBill>findByTimeAfterAndTimeBeforeAndBillTypeId(Date date1, Date date2, Long billTypeId, Pageable pageable);
   	//1111
   	Page<TdBill>findByTimeAfterAndTimeBeforeAndStatusIdAndBillTypeId(Date date1, Date date2, Long StatusId, Long billTypeId, Pageable pageable);
+  	
+  	//指定用户的票据页面
+  	Page<TdBill>findByUserId(Long userId, Pageable pageable);
+  	Page<TdBill>findByStatusIdAndUserId(Long statusId, Long userId, Pageable pageable);
+  	
+  	Page<TdBill>findByTimeBeforeAndUserId(Date date2, Long userId, Pageable pageable);
+  	Page<TdBill>findByTimeBeforeAndStatusIdAndUserId(Date date2, Long statusId, Long userId, Pageable pageable);
+  	Page<TdBill>findByTimeAfterAndUserId(Date date1, Long userId, Pageable pageable);
+  	Page<TdBill>findByTimeAfterAndStatusIdAndUserId(Date date1,Long statusId, Long userId, Pageable pageable);
+  	Page<TdBill>findByTimeAfterAndTimeBeforeAndUserId(Date date1,Date date2,Long userId, Pageable pageable);
+  	Page<TdBill>findByTimeAfterAndTimeBeforeAndStatusIdAndUserId(Date date1,Date date2,Long statusId, Long userId, Pageable pageable);
 
 }

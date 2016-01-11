@@ -26,4 +26,6 @@ public interface TdFinanceRepo extends
 	 
     List<TdFinance> findByUserId(Long userId, Sort sort);
     List<TdFinance> findByTime(Date time);
+    
+    Page<TdFinance> findByTime(Date time, Pageable pageable);
 }

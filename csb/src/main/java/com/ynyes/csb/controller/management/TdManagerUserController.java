@@ -341,6 +341,7 @@ public class TdManagerUserController {
       
         map.addAttribute("date", date);
       
+        map.addAttribute("enterName", tdEnterTypeService.findOne(user.getEnterTypeId()));
 
 
             
