@@ -30,7 +30,7 @@ public class TdGather {
     @Column
     private Long userId;
     
-    // 名称
+    // 标题
     @Column
     private String title;
   
@@ -150,11 +150,11 @@ public class TdGather {
     @Column
     private Double urbanTax;
     
-    // 【教育附加】金额
+    // 【教育费附加】金额
     @Column
     private Double eduAdd;
     
-    // 【地方教育附加】金额
+    // 【地方教育费附加】金额
     @Column
     private Double eduAddLocal;
     
@@ -205,6 +205,7 @@ public class TdGather {
     //补充说明
     @Column
     private String content;
+    
 
 	public Long getId() {
 		return id;

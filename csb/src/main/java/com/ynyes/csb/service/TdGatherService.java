@@ -127,6 +127,16 @@ public class TdGatherService {
         return repository.findAll(pageRequest);
     }
     
+    /**
+     * 根据时间  	
+     * 【用途】后台票据管理导入
+     */
+    public Page<TdGather> findByTime(Date time, int page, int size)
+    {
+    	PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.ASC, "sortId").and(new Sort(Direction.DESC,"id")));
+        return repository.findByTime(time , pageRequest);
+    }
+    
     public Page<TdGather> searchAllOrderBySortIdAsc(String keywords, int page, int size)
     {
         PageRequest pageRequest = new PageRequest(page, size);

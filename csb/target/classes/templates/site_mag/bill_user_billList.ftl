@@ -100,7 +100,7 @@ var theForm = document.forms['form1'];
 	        <b style="margin-left:30px;">公司名称：</b>
 	        <span style="width:150px;"><#if user??>${user.enterName!''}</#if> </span> 
 	        <b style="margin-left:30px;">公司类型：</b>
-	        <span style="width:150px;"><#if enterType??>${enterType!''}</#if></span> 
+	        <span style="width:150px;"><#if enterType??>${enterType.title!''}</#if></span> 
 	        <b style="margin-left:30px;">联系人姓名：</b>
 	        <span style="width:150px;"><#if user??>${user.realName!''}</#if></span>
 	        <b style="margin-left:30px;">联系人电话：</b>
@@ -147,7 +147,7 @@ var theForm = document.forms['form1'];
                 <td align="center">
                 <#switch item.statusId>
                 <#case 2>用户上传完成<#break>
-                <#case 3>票据整理<#break>
+                <#case 3>票据整理中（已下载）<#break>
                 <#case 4>财务处理<#break>
                 <#case 5>税费扣缴<#break>
                 <#case 6>财务状况表<#break>

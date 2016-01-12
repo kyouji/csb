@@ -87,7 +87,7 @@
 <body class="mainbody">
 <!--导航栏-->
 <div class="location">
-  <a href="/Verwalter/bill/list" class="back"><i></i><span>返回列表页</span></a>
+  <a href="/Verwalter/bill/user/billList/<#if user??>${user.id?c}</#if>" class="back"><i></i><span>返回列表页</span></a>
   <a href="/Verwalter/center" class="home"><i></i><span>首页</span></a>
   <i class="arrow"></i>
   <span>票据管理</span>

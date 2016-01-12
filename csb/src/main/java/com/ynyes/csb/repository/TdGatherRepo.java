@@ -25,6 +25,7 @@ public interface TdGatherRepo extends
 	 TdGather findByUserIdAndTime(Long userId, Date time);
 	 
     Page<TdGather> findByTitleContainingOrderBySortIdAsc(String keywords, Pageable page);
+    Page<TdGather> findByTime(Date time, Pageable page);
     
     List<TdGather> findByUserId(Long userId, Sort sort);
     List<TdGather> findByTime(Date time);

@@ -147,6 +147,11 @@ public class TdDataController {
         			SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月");
         			downloadName = sdf.format(bill.getTime())+"票据_"+user.getEnterName()+"_"+user.getNumber()+ext;
         		}
+        		if(null != bill.getStatusId() && bill.getStatusId() == 2L)
+        		{
+        			bill.setStatusId(3L);   //状态改为票据整理中，即”已下载“
+        			tdBillService.save(bill);
+        		}
         	}
         }
         

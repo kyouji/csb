@@ -47,6 +47,15 @@ $(document).ready(function(){
                 }
              }
     });
+    
+            //初始化上传控件
+        $(".upload-img").each(function () {
+            $(this).InitSWFUpload({ 
+                sendurl: "/Verwalter/importUpload", 
+                flashurl: "/mag/js/swfupload.swf",
+                filetypes: "*.*;" 
+            });
+        });
 });
 
 function showEnter(){
@@ -72,7 +81,36 @@ function allowsubmit()
 
 function selectDate(time)
 {
-	location.href='/Verwalter/bill/deal/${bill.id?c}?statusId=3&time='+time;
+	<#--location.href='/Verwalter/bill/deal/${bill.id?c}?statusId=3&time='+time;-->
+	location.href='/Verwalter/bill/gather/deal/<#if gather??>${gather.id?c}</#if>?time='+time;
+}
+
+//导入表格
+function importFile()
+{
+	var fileUrl = document.getElementById("fileUrl").value;
+	var time = document.getElementById("time").value;
+	var userId = document.getElementById("userId").value;
+	
+	  $.ajax({
+	      type:"post",
+	      url:"/reg",
+	      data:{"fileUrl":fileUrl,
+	    	  		"time":time,
+	    	  		"userId":userId},
+	      success:function(data){
+			if (data.code == 1)
+			{
+	            alert(data.msg);
+			}
+			else{
+				var dialog = $.dialog.alert(
+					"导入成功！请核对信息后提交保存"
+					//function(){location.href='/Verwalter/bill/list/2';}
+				);
+			}
+	      }
+	  });
 }
 </script>
 </head>
@@ -96,7 +134,7 @@ function selectDate(time)
   <div id="floatHead" class="content-tab" style="position: static; top: 52px;">
     <div class="content-tab-ul-wrap">
       <ul>
-          <li><a href="javascript:;" onclick="tabs(this);" class="selected menu">票据资料</a></li>
+          <li><a href="javascript:;" onclick="tabs(this);" class="selected menu">基本资料</a></li>
           <li><a href="javascript:;" onclick="tabs(this);" class="">收入</a></li>
           <li><a href="javascript:;" onclick="tabs(this);" class="">进货</a></li>
           <li><a href="javascript:;" onclick="tabs(this);" class="">本月应纳税金</a></li>
@@ -135,7 +173,8 @@ function selectDate(time)
     <dl>
        <dt>用户编号：</dt>
        <dd><#if user??>${user.number!''}</#if></dd>
-    </dl>    
+    </dl>
+    <#--    
     <dl>
     <dt>票据</dt>
     <dd>
@@ -146,6 +185,7 @@ function selectDate(time)
     <dt>票据下载</dt>
     <dd><a href="/download/data?name=${bill.imgUrl!''}">${bill.imgUrl!''}</a></dd>
   </dl>
+  -->
     <dl>
         <dt>标题</dt>
         <dd>
@@ -153,6 +193,13 @@ function selectDate(time)
             <span class="Validform_checktip">*不填则默认显示：某月票据整理汇总如下</span>
         </dd>
     </dl>  
+        <dl>
+            <dt>导入表格</dt>
+            <dd>
+                <input name="fileUrl"   type="text" id="fileUrl" value="<#if article??>${article.imgUrl!""}</#if>" class="input normal upload-path">
+                <div class="upload-box upload-img"></div>
+            </dd>
+        </dl>    
 	<dl>
 	    <dt>排序数字</dt>
 	    <dd>
@@ -358,6 +405,10 @@ function selectDate(time)
     </dl>    
 </div>  
 
+<!--导入表格 -->
+<div class="tab-content" style="display: none;">
+
+</div>
     
 
 <!--/安全设置-->

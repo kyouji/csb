@@ -231,6 +231,83 @@ public class TdUploadController {
         return null;
     }
     
+    //导入上传，用文件名覆盖的方式节约空间
+    @RequestMapping(value = "/importUpload", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> importUpload(String action,
+            @RequestParam MultipartFile Filedata, HttpServletRequest req,HttpServletResponse response) {
+        Map<String, Object> res = new HashMap<String, Object>();
+        res.put("status", 0);
+        String username = (String) req.getSession().getAttribute("manager");
+        
+        if (null == username) {
+            res.put("msg", "请重新登录！");
+            return res;
+        }
+
+        if (null == Filedata || Filedata.isEmpty()) {
+            res.put("msg", "图片不存在");
+            return res;
+        }
+
+        String name = Filedata.getOriginalFilename();
+//        String contentType = Filedata.getContentType();
+
+        String ext = name.substring(name.lastIndexOf("."));
+
+        try {
+            byte[] bytes = Filedata.getBytes();
+
+            String fileName;
+        	fileName = "caishuibao_import" + ext;
+
+            String uri = ImageRoot + "/" + fileName;
+
+            File file = new File(uri);
+
+            BufferedOutputStream stream = new BufferedOutputStream(
+                    new FileOutputStream(file));
+            stream.write(bytes);
+            stream.close();
+
+            res.put("status", 1);
+            res.put("msg", "上传文件成功！");
+            res.put("path",  fileName);
+            res.put("thumb", "/images/" + fileName);
+            res.put("name", name);
+            res.put("size", Filedata.getSize());
+            res.put("ext", ext.substring(1));
+
+        } catch (Exception e) {
+            res.put("status", 0);
+            res.put("msg", "上传文件失败！");
+        }
+        response.reset();
+        response.setCharacterEncoding("UTF-8");
+    	 response.setContentType("text/html");
+      
+//        response.setContentType("text/html");
+        PrintWriter writer = null;
+        try {
+            writer = response.getWriter();
+            JSONObject jsonObject = JSONObject.fromObject(res);
+            writer.println(jsonObject);  //想办法把map转成json
+            writer.flush();
+        } catch (IOException e) {
+            System.err.println(e);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (Exception e) {
+                    System.err.println(e);
+                }
+            }
+        }
+        
+        return null;
+    }
+    
     @RequestMapping(value = "/upload/client", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> uploadclient(String action,

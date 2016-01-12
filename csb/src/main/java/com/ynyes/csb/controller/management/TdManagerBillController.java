@@ -2,8 +2,10 @@ package com.ynyes.csb.controller.management;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.text.ParseException;
@@ -25,9 +27,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.tomcat.util.bcel.classfile.Constant;
 import org.neo4j.cypher.internal.compiler.v2_1.docbuilders.internalDocBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +50,7 @@ import com.ynyes.csb.entity.TdArticle;
 import com.ynyes.csb.entity.TdBill;
 import com.ynyes.csb.entity.TdBillType;
 import com.ynyes.csb.entity.TdDemand;
+import com.ynyes.csb.entity.TdEnterType;
 import com.ynyes.csb.entity.TdFinance;
 import com.ynyes.csb.entity.TdGather;
 import com.ynyes.csb.entity.TdManager;
@@ -96,6 +101,11 @@ public class TdManagerBillController {
 	
 	@Autowired
 	TdEnterTypeService tdEnterTypeService;
+	
+ 	private POIFSFileSystem fs;
+    private HSSFWorkbook wb;
+    private HSSFSheet sheet;
+    private HSSFRow row;
 	
 	@RequestMapping(value="/list/{statusId}")
     public String billList(Integer page,
@@ -402,7 +412,159 @@ public class TdManagerBillController {
 			return res;
 	    }
 	 
-	//处理票据，人工处理
+    //票据整理 整理列表 tdGather列表
+  	 @RequestMapping(value="/gather/list")
+  	    public String gatherList(Integer page,
+  	                          Integer size,
+  	                          String time,
+  	                          ModelMap map,
+  	                          HttpServletRequest req) throws ParseException{
+  	        String username = (String) req.getSession().getAttribute("manager");
+  	        if (null == username) {
+  	            return "redirect:/Verwalter/login";
+  	        }
+  	        if (null == page || page < 0)
+  	        {
+  	            page = 0;
+  	        }
+  	        
+  	        if (null == size || size <= 0)
+  	        {
+  	            size = SiteMagConstant.pageSize;
+  	        }
+  	        
+  	        map.addAttribute("page", page);
+  	        map.addAttribute("size", size);
+
+  	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+  	        Date date = new Date();
+  	        if(null == time || time.equals(""))
+  	        {
+  	        	 time = sdf.format(date);
+  	        	 date = sdf.parse(time);
+  	        }
+  	        else{
+  	        	date = sdf.parse(time);
+  	        }
+  	        Page<TdGather> gatherPage = tdGatherService.findByTime(date, page, size);
+  	        
+  	        if(null != gatherPage)
+  	        {
+  	        	for(TdGather item : gatherPage)
+  	        	{
+  	        		TdUser tdUser = tdUserService.findOne(item.getUserId());
+  	        		if(null != tdUser)
+  	        		{
+  	        			map.addAttribute("user_"+item.getId(), tdUser);
+  	        			if (null != tdUser.getEnterTypeId())
+  	        			{
+  	        				TdEnterType enterType = tdEnterTypeService.findOne(tdUser.getEnterTypeId());
+  	  	        			map.addAttribute("enterType_"+item.getId(), enterType.getTitle());
+  	        			}
+  	        		}
+  	        	}
+  	        }
+
+  	        map.addAttribute("time", time);
+  	        map.addAttribute("gather_page", gatherPage);
+  	        
+  	        return "/site_mag/bill_gather_list";
+  	    }
+  	 
+  	//票据整理 整理列表 tdGather列表 POST
+  	 @RequestMapping(value="/gather/list",method=RequestMethod.POST)
+  	    public String gatherListPost(Integer page,
+  	                          Integer size,
+  	                          String time,
+  	                          ModelMap map,
+  	                          HttpServletRequest req) throws ParseException{
+  	        String username = (String) req.getSession().getAttribute("manager");
+  	        if (null == username) {
+  	            return "redirect:/Verwalter/login";
+  	        }
+  	        if (null == page || page < 0)
+  	        {
+  	            page = 0;
+  	        }
+  	        
+  	        if (null == size || size <= 0)
+  	        {
+  	            size = SiteMagConstant.pageSize;
+  	        }
+  	        
+  	        map.addAttribute("page", page);
+  	        map.addAttribute("size", size);
+  	        
+  	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+  	        Date date = new Date();
+  	        if(null == time || time.equals(""))
+  	        {
+  	        	 date = sdf.parse(sdf.format(date));
+  	        }
+  	        else{
+  	        	date = sdf.parse(time);
+  	        }
+  	        
+  	        Page<TdGather> gatherPage = tdGatherService.findByTime(date, page, size);
+  	        
+  	        if(null != gatherPage)
+  	        {
+  	        	for(TdGather item : gatherPage)
+  	        	{
+  	        		TdUser tdUser = tdUserService.findOne(item.getUserId());
+  	        		if(null != tdUser)
+  	        		{
+  	        			map.addAttribute("user_"+item.getId(), tdUser);
+  	        		}
+  	        	}
+  	        }
+
+  	        map.addAttribute("time", time);
+  	        map.addAttribute("gather_page", gatherPage);
+  	        
+  	        return "/site_mag/bill_gather_list";
+  	    }
+  	 
+  	//处理票据单个用户汇总
+	 @RequestMapping(value="/gather/deal/{id}")
+	    public String billGatherDeal(@PathVariable Long id,
+	    					String time,
+	                        String __VIEWSTATE,
+	                        ModelMap map,
+	                        HttpServletRequest req){
+	        String username = (String) req.getSession().getAttribute("manager");
+	        if (null == username)
+	        {
+	            return "redirect:/Verwalter/login";
+	        }
+	        
+	        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+	      
+	        if (null != id)
+	        {
+	        	TdGather tdGather = tdGatherService.findOne(id);
+	            map.addAttribute("tdGather",tdGather);
+	            map.addAttribute("user", tdUserService.findOne(tdGather.getUserId()));
+	            
+	            Date date  = null;
+	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+	            if(null == time)
+	            {
+	            	time = sdf.format(new Date()); 
+	            }
+	      
+    			try {
+					date = sdf.parse(time);
+    			} catch (Exception e) {
+    				e.printStackTrace();
+    			}
+	          
+	            map.addAttribute("time", time);
+	    }
+	        return "/site_mag/bill_deal";
+	 }
+    
+	//处理单个票据）
 		 @RequestMapping(value="/deal/{id}")
 		    public String billDeal(@PathVariable Long id,
 		    					Long statusId,
@@ -531,6 +693,260 @@ public class TdManagerBillController {
 	        res.put("code", 0);
 	        return res;
 	    }
+	 /*-----------------------------------------------------
+	  * =========导入表格模块////////==========
+	  =================================*/
+	 //票据处理：导入excel表格
+		 @RequestMapping(value="/gather/import")
+		    public String billGatherImport(
+		    					String time,
+		                        String __VIEWSTATE,
+		                        ModelMap map,
+		                        HttpServletRequest req){
+		        String username = (String) req.getSession().getAttribute("manager");
+		        if (null == username)
+		        {
+		            return "redirect:/Verwalter/login";
+		        }
+		        
+		        map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+	            map.addAttribute("time", time);
+
+		        return "/site_mag/bill_gather_import";
+		 } 
+		 
+		 @RequestMapping(value="/gather/import/submit", method=RequestMethod.POST)
+		 @ResponseBody
+		    public Map<String,Object> billGatherImportSubmit(
+		    					String time,
+		    					String fileUrl,
+//		                        ModelMap map,
+		                        HttpServletResponse resp,
+                                HttpServletRequest req) throws IOException{
+			 Map<String, Object> res = new HashMap<String, Object>();
+				res.put("code", 1);
+		        String username = (String) req.getSession().getAttribute("manager");
+		        if (null == username)
+		        {
+		        	res.put("login", 1);
+		            return res;
+		        }
+		        
+		        //导入过程
+		        String filepath = SiteMagConstant.imagePath;	
+		        File file = new File(filepath +"/" +fileUrl);
+
+		        try {
+		            // 对读取Excel表格标题测试
+		            InputStream is = new FileInputStream(file);
+		            String[] title = readExcelTitle(is);
+		            System.out.println("获得Excel表格的标题:");
+		            for (String s : title) {
+		                System.out.print(s + " ");
+		            }
+
+		            // 对读取Excel表格内容测试
+		            InputStream is2 = new FileInputStream(file);
+		            Map<Integer, String> map = readExcelContent(is2);
+		            System.out.println("获得Excel表格的内容:");
+		            for (int i = 1; i <= map.size(); i++) {
+		                System.out.println(map.get(i));
+		            }
+
+		            
+		        } catch (FileNotFoundException e) {
+		            System.out.println("未找到指定路径的文件!");
+		            e.printStackTrace();
+		        }
+		    
+		        
+		        
+		        res.put("code", 0);
+		        return res;
+		 } 
+
+
+		 /**
+		     * 读取Excel表格表头的内容
+		     * @param InputStream
+		     * @return String 表头内容的数组
+		     */
+		    public String[] readExcelTitle(InputStream is) {
+		        try {
+		            fs = new POIFSFileSystem(is);
+		            wb = new HSSFWorkbook(fs);
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		        }
+		        sheet = wb.getSheetAt(0);
+		        row = sheet.getRow(0);
+		        // 标题总列数
+		        int colNum = row.getPhysicalNumberOfCells();
+		        System.out.println("colNum:" + colNum);
+		        String[] title = new String[colNum];
+		        for (int i = 0; i < colNum; i++) {
+		            //title[i] = getStringCellValue(row.getCell((short) i));
+		            title[i] = getCellFormatValue(row.getCell((short) i));
+		        }
+		        return title;
+		    }
+
+		    /**
+		     * 读取Excel数据内容
+		     * @param InputStream
+		     * @return Map 包含单元格数据内容的Map对象
+		     */
+		    public Map<Integer, String> readExcelContent(InputStream is) {
+		        Map<Integer, String> content = new HashMap<Integer, String>();
+		        String str = "";
+		        try {
+		            fs = new POIFSFileSystem(is);
+		            wb = new HSSFWorkbook(fs);
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		        }
+		        sheet = wb.getSheetAt(0);
+		        // 得到总行数
+		        int rowNum = sheet.getLastRowNum();
+		        row = sheet.getRow(0);
+		        int colNum = row.getPhysicalNumberOfCells();
+		        // 正文内容应该从第二行开始,第一行为表头的标题
+		        for (int i = 1; i <= rowNum; i++) {
+		            row = sheet.getRow(i);
+		            int j = 0;
+		            while (j < colNum) {
+		                // 每个单元格的数据内容用"-"分割开，以后需要时用String类的replace()方法还原数据
+		                // 也可以将每个单元格的数据设置到一个javabean的属性中，此时需要新建一个javabean
+		                // str += getStringCellValue(row.getCell((short) j)).trim() +
+		                // "-";
+		                str += getCellFormatValue(row.getCell((short) j)).trim() + "    ";
+		                j++;
+		            }
+		            content.put(i, str);
+		            str = "";
+		            
+		        }
+		        return content;
+		    }
+
+		    /**
+		     * 获取单元格数据内容为字符串类型的数据
+		     * 
+		     * @param cell Excel单元格
+		     * @return String 单元格数据内容
+		     */
+		    private String getStringCellValue(HSSFCell cell) {
+		        String strCell = "";
+		        switch (cell.getCellType()) {
+		        case HSSFCell.CELL_TYPE_STRING:
+		            strCell = cell.getStringCellValue();
+		            break;
+		        case HSSFCell.CELL_TYPE_NUMERIC:
+		            strCell = String.valueOf(cell.getNumericCellValue());
+		            break;
+		        case HSSFCell.CELL_TYPE_BOOLEAN:
+		            strCell = String.valueOf(cell.getBooleanCellValue());
+		            break;
+		        case HSSFCell.CELL_TYPE_BLANK:
+		            strCell = "";
+		            break;
+		        default:
+		            strCell = "";
+		            break;
+		        }
+		        if (strCell.equals("") || strCell == null) {
+		            return "";
+		        }
+		        if (cell == null) {
+		            return "";
+		        }
+		        return strCell;
+		    }
+
+		    /**
+		     * 获取单元格数据内容为日期类型的数据
+		     * 
+		     * @param cell
+		     *            Excel单元格
+		     * @return String 单元格数据内容
+		     */
+		    private String getDateCellValue(HSSFCell cell) {
+		        String result = "";
+		        try {
+		            int cellType = cell.getCellType();
+		            if (cellType == HSSFCell.CELL_TYPE_NUMERIC) {
+		                Date date = cell.getDateCellValue();
+		                result = (date.getYear() + 1900) + "-" + (date.getMonth() + 1)
+		                        + "-" + date.getDate();
+		            } else if (cellType == HSSFCell.CELL_TYPE_STRING) {
+		                String date = getStringCellValue(cell);
+		                result = date.replaceAll("[年月]", "-").replace("日", "").trim();
+		            } else if (cellType == HSSFCell.CELL_TYPE_BLANK) {
+		                result = "";
+		            }
+		        } catch (Exception e) {
+		            System.out.println("日期格式不正确!");
+		            e.printStackTrace();
+		        }
+		        return result;
+		    }
+
+		    /**
+		     * 根据HSSFCell类型设置数据
+		     * @param cell
+		     * @return
+		     */
+		    private String getCellFormatValue(HSSFCell cell) {
+		        String cellvalue = "";
+		        if (cell != null) {
+		            // 判断当前Cell的Type
+		            switch (cell.getCellType()) {
+		            // 如果当前Cell的Type为NUMERIC
+		            case HSSFCell.CELL_TYPE_NUMERIC:
+		            case HSSFCell.CELL_TYPE_FORMULA: {
+		                // 判断当前的cell是否为Date
+		                if (HSSFDateUtil.isCellDateFormatted(cell)) {
+		                    // 如果是Date类型则，转化为Data格式
+		                    
+		                    //方法1：这样子的data格式是带时分秒的：2011-10-12 0:00:00
+		                    //cellvalue = cell.getDateCellValue().toLocaleString();
+		                    
+		                    //方法2：这样子的data格式是不带带时分秒的：2011-10-12
+		                    Date date = cell.getDateCellValue();
+		                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		                    cellvalue = sdf.format(date);
+		                    
+		                }
+		                // 如果是纯数字
+		                else {
+		                    // 取得当前Cell的数值
+		                    cellvalue = String.valueOf(cell.getNumericCellValue());
+		                }
+		                break;
+		            }
+		            // 如果当前Cell的Type为STRIN
+		            case HSSFCell.CELL_TYPE_STRING:
+		                // 取得当前的Cell字符串
+		                cellvalue = cell.getRichStringCellValue().getString();
+		                break;
+		            // 默认的Cell值
+		            default:
+		                cellvalue = " ";
+		            }
+		        } else {
+		            cellvalue = "";
+		        }
+		        return cellvalue;
+
+		    }
+
+		 
+		    
+		 
+		 /*-----------------------------------------------------
+		  * =========/////导入表格模块=============
+		  =================================*/
+	 
 	 
 	//票据整理 用户列表 2016年1月10日 02:04:27
 	 @RequestMapping(value="/user/list")
@@ -709,17 +1125,27 @@ public class TdManagerBillController {
 			//开始筛选 zhangji
 			if (null == userId)
 			{
-				billPage = tdBillService.findByUserId( userId, page , size);
+				billPage = tdBillService.findAll( page , size);
 			}
 			else{				
-				billPage = tdBillService.findAll( page , size);
+				billPage = tdBillService.findByUserId( userId, page , size);
 			}
 			
 			if (null != userId)
 			{
 				TdUser user = tdUserService.findOne(userId);
-				map.addAttribute("user", user);
-				map.addAttribute("enterType", tdEnterTypeService.findOne(user.getEnterTypeId()).getTitle());
+				if(null != user)
+				{
+					map.addAttribute("user", user);
+					if (null != user.getEnterTypeId())
+					{
+						TdEnterType enterType = tdEnterTypeService.findOne(user.getEnterTypeId());
+						if (null != enterType)
+						{
+							map.addAttribute("enterType", enterType);
+						}
+					}
+				}
 			}
 			map.addAttribute("billType_list", tdBillTypeService.findByIsEnableTrueOrderBySortIdAsc());
 			map.addAttribute("userId",userId);
@@ -1225,32 +1651,38 @@ public class TdManagerBillController {
             if (chkId >=0 && ids.length > chkId)
             {
 	                Long id = ids[chkId];
-	                
-	                String name = tdBillService.findOne(id).getImgUrl();
-	                
-	                File file = new File(filepath +"/" + name);
-	         	FileInputStream fis = new FileInputStream(file);
-	         	String ext = name.substring(name.lastIndexOf("."));
-	 	        out.putNextEntry(new ZipEntry(user.getUsername()+"_票据"+user.getNumber()+"_"+id+ext));
-	 	        
-	 	       resp.reset();
-               resp.setHeader("Content-Disposition", "attachment; filename="
-                       + name);
-               resp.setContentType("application/octet-stream; charset=utf-8");
-	 	
-	 	        int len;
-	 	
-	 	        //读入需要下载的文件的内容，打包到zip文件
-	 	
-	 	       while((len = fis.read(buffer))>0) {
-	 	
-	 	        out.write(buffer,0,len);
-	
-	        }
+	                TdBill bill = tdBillService.findOne(id);
+	                if(null != bill)
+	                {
+	                	String name = bill.getImgUrl();
+		                
+		                File file = new File(filepath +"/" + name);
+			         	FileInputStream fis = new FileInputStream(file);
+			         	String ext = name.substring(name.lastIndexOf("."));
+			 	        out.putNextEntry(new ZipEntry(user.getUsername()+"_票据"+user.getNumber()+"_"+id+ext));
+			 	        
+				 	    resp.reset();
+			            resp.setHeader("Content-Disposition", "attachment; filename="
+			                       + name);
+			            resp.setContentType("application/octet-stream; charset=utf-8");
+		 	
+				 	    int len;
+				 	
+				 	   //读入需要下载的文件的内容，打包到zip文件
+				 	   while((len = fis.read(buffer))>0) {
+				 	        out.write(buffer,0,len);
+				 	   }
 
-	         out.closeEntry();
+				 	   out.closeEntry();
 
-         fis.close();
+				 	   fis.close();
+				 	   
+		        		if(null != bill.getStatusId() && bill.getStatusId() == 2L)
+		        		{
+		        			bill.setStatusId(3L);   //状态改为票据整理中，即”已下载“
+		        			tdBillService.save(bill);
+		        		}
+	                }
             }
         }
 
@@ -1338,7 +1770,14 @@ public class TdManagerBillController {
  			         out.closeEntry();
 
  			         fis.close();
-	                }
+		 			         
+			         //更改状态 已下载
+	        		if(null != item.getStatusId() && item.getStatusId() == 2L)
+	        		{
+	        			item.setStatusId(3L);   //状态改为票据整理中，即”已下载“
+	        			tdBillService.save(item);
+	        		}
+                }
             }
             
         }
