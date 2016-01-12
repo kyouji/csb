@@ -94,7 +94,7 @@ function importFile()
 	
 	  $.ajax({
 	      type:"post",
-	      url:"/reg",
+	      url:"/Verwalter/bill/gather/import/submit",
 	      data:{"fileUrl":fileUrl,
 	    	  		"time":time,
 	    	  		"userId":userId},
@@ -152,7 +152,7 @@ function importFile()
 <form name="bill_deal" method="post" action="/Verwalter/bill/gather/save" id="bill_deal">
 
 <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="${__VIEWSTATE!""}" >
-<input type="hidden" name="userId" value="<#if user??>${user.id?c!""}</#if>" >
+<input type="hidden" name="userId" id="userId" value="<#if user??>${user.id?c!""}</#if>" >
 <input type="hidden" name="id" value="<#if tdGather??>${tdGather.id?c!""}</#if>" >
 <input type="hidden" name="billId" value="<#if bill??>${bill.id?c!""}</#if>" >
 <div class="tab-content" style="display: block;">
@@ -160,7 +160,7 @@ function importFile()
          <dt>发布月份</dt>
          <dd>
              <div class="input-date" style="width: 240px;">
-                 <input name="time" type="text" id="time" value="<#if gather??&&gather.time??>${gather.time?string("yyyy-MM")}<#elseif date??>${date?string("yyyy-MM")}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" "  onchange="javascript:selectDate(this.value);">
+                 <input name="time" type="text" id="time" value="<#if time??>${time!''}<#elseif date??>${date?string("yyyy-MM")}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" "  onchange="javascript:selectDate(this.value);">
                  <i  style="right: 70px;">日期</i>
              </div>
              <#--<span class="Validform_checktip">不选择默认当前月份</span>-->
@@ -198,6 +198,7 @@ function importFile()
             <dd>
                 <input name="fileUrl"   type="text" id="fileUrl" value="<#if article??>${article.imgUrl!""}</#if>" class="input normal upload-path">
                 <div class="upload-box upload-img"></div>
+                <div><input type="button" onclick="javascript:importFile();" value="导入"/></div>
             </dd>
         </dl>    
 	<dl>
